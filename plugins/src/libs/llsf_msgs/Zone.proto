@@ -1,9 +1,9 @@
 
 /***************************************************************************
- *  PuckInfo.proto - LLSF Protocol - Puck information
+ *  Zone.proto - LLSF Protocol - Zone Identifier
  *
- *  Created: Mon Feb 25 11:36:50 2013
- *  Copyright  2013  Tim Niemueller [www.niemueller.de]
+ *  Created: Sat Apr 11 20:56:18 2015
+ *  Copyright  2013-2015  Tim Niemueller [www.niemueller.de]
  ****************************************************************************/
 
 /*  Redistribution and use in source and binary forms, with or without
@@ -36,48 +36,33 @@
 
 package llsf_msgs;
 
-import "Pose2D.proto";
-import "Team.proto";
-
 option java_package = "org.robocup_logistics.llsf_msgs";
-option java_outer_classname = "PuckInfoProtos";
+option java_outer_classname = "ZoneProtos";
 
-// Current state of a puck
-enum PuckState {
-  S0 = 0;
-  S1 = 1;
-  S2 = 2;
-  P1 = 4;
-  P2 = 5;
-  P3 = 6;
-  CONSUMED = 7;
-  FINISHED = 8;
-}
-
-message Puck {
-  enum CompType {
-    COMP_ID  = 2000;
-    MSG_TYPE = 50;
-  }
-
-  // Puck unique ID
-  required uint32    id = 1;
-  // Current state of the puck
-  required PuckState state = 2;
-
-  // Optional pose information
-  optional Pose2D    pose = 3;
-
-  // Team the puck belongs to
-  optional Team      team_color = 4;
-}
-
-message PuckInfo {
-  enum CompType {
-    COMP_ID  = 2000;
-    MSG_TYPE = 51;
-  }
-
-  // List of all known pucks
-  repeated Puck pucks = 1;
+// Zone identifiers
+enum Zone {
+  Z1  =  1;
+  Z2  =  2;
+  Z3  =  3;
+  Z4  =  4;
+  Z5  =  5;
+  Z6  =  6;
+  Z7  =  7;
+  Z8  =  8;
+  Z9  =  9;
+  Z10 = 10;
+  Z11 = 11;
+  Z12 = 12;
+  Z13 = 13;
+  Z14 = 14;
+  Z15 = 15;
+  Z16 = 16;
+  Z17 = 17;
+  Z18 = 18;
+  Z19 = 19;
+  Z20 = 20;
+  Z21 = 21;
+  Z22 = 22;
+  Z23 = 23;
+  Z24 = 24;
 }

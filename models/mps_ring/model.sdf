@@ -3,10 +3,11 @@
   <model name="mps_ring">
     <static>true</static>
     <link name="body">
-      <gravity>false</gravity>
+      <pose>0 0 0.01 0 0 0</pose>
+      <gravity>true</gravity>
       <inertial>
-	<pose>0 0 0.445 0 0 0</pose>
-        <mass>30</mass>
+	<pose>0 0 0.005 0 0 0</pose>
+        <mass>50</mass>
         <inertia>
 	  <!-- according to http://en.wikipedia.org/wiki/List_of_moments_of_inertia for a solid box of width: 0.35, height:0.7, depth: 0.7, mass m=30 -->
           <ixx>2.45</ixx>
@@ -78,8 +79,17 @@
           </box>
         </geometry>
       </collision>
-      <collision name="collision_base_box_wall_west">
-        <pose>-0.345 0 0.42 0 0 0 </pose>
+      <!-- On both ends of the mps are transparent walls a laser sensor can look through, in the middle are solid walls -->
+      <collision name="collision_base_box_wall_middle_1">
+        <pose>-0.035 0 0.42 0 0 0 </pose>
+        <geometry>
+	  <box>
+	    <size>0.01 0.35 0.72</size>
+          </box>
+        </geometry>
+      </collision>
+      <collision name="collision_base_box_wall_middle_2">
+        <pose>0.035 0 0.42 0 0 0 </pose>
         <geometry>
 	  <box>
 	    <size>0.01 0.35 0.72</size>
@@ -94,12 +104,45 @@
           </box>
         </geometry>
       </collision>
+      <collision name="collision_wheels">
+	<!-- Collision to avoid that the box falls down (In reality done by wheels) -->
+        <pose>0 0 0.01 0 0 0 </pose>
+        <geometry>
+	  <box>
+	    <size>0.69 0.35 0.02</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="base_0">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <sphere>
+            <radius>0.05</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name="base_1">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <sphere>
+            <radius>0.05</radius>
+          </sphere>
+        </geometry>
+      </visual>
+      <visual name="base_2">
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <sphere>
+            <radius>0.05</radius>
+          </sphere>
+        </geometry>
+      </visual>
     </link>
 
     <include>
       <name>light_signals</name>
       <uri>model://light_signals</uri>
-      <pose>-0.0805 -0.1285 0.915 0 0 0</pose>
+      <pose>-0.2905 -0.113 0.915 0 0 0</pose>
     </include>
 
     <include>
@@ -107,6 +150,30 @@
       <uri>model://tags</uri>
       <pose>0.025 0 0 0 0 3.14</pose> <!-- The belt is somehow not centered in the models -->
     </include>
+
+    <joint name="mps_tag_joint" type="revolute">
+      <parent>body</parent>
+      <child>mps_tags::link</child>
+      <axis>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
+
+    <joint name="mps_light_joint" type="revolute">
+      <parent>body</parent>
+      <child>light_signals::link</child>
+      <axis>
+        <limit>
+          <lower>0</lower>
+          <upper>0</upper>
+        </limit>
+        <xyz>0 0 1</xyz>
+      </axis>
+    </joint>
 
     <!-- Plugin to control the MPS and detect workpieces -->
     <plugin name="MPS" filename="libmps.so"/>
