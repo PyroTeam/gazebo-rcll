@@ -30,6 +30,14 @@
 
 #include <boost/thread/mutex.hpp>
 
+
+//config values
+#define TOPIC_SET_GRIPPER "~/RobotinoSim/SetGripper/"
+#define TOPIC_HOLDS_PUCK "~/RobotinoSim/GripperHasPuck/"
+#define TOPIC_JOINT "/GripperJoints/Holding"
+#define RADIUS_GRAB_AREA 0.05
+
+
 namespace gazebo
 {
     /**
@@ -50,6 +58,8 @@ namespace gazebo
     private:
         /// Pointer to the gazbeo model
         physics::ModelPtr model_;
+        physics::ModelPtr robotino_;
+        physics::LinkPtr robotino_link_;
         /// Pointer to the update event connection
         event::ConnectionPtr update_connection_;
         ///Node for communication to fawkes
@@ -66,6 +76,11 @@ namespace gazebo
 
         ///Suscriber for SetGripper
         transport::SubscriberPtr set_gripper_sub_;
+        /// Publisher for has_puck
+        gazebo::transport::PublisherPtr has_puck_pub_;
+
+        /// Publisher to announce which puck is hold by the gripper
+        gazebo::transport::PublisherPtr joint_pub_;
 
         gazebo::physics::JointPtr grabJoint;
 
@@ -73,10 +88,11 @@ namespace gazebo
         static gazebo::physics::JointPtr getJointEndingWith(physics::ModelPtr model, std::string link);
 
         void close();
-		void open();
+        void open();
 
         void setPuckPose();
+        void sendHasPuck(bool has_puck);
 
-		gazebo::physics::ModelPtr getNearestPuck();
+        gazebo::physics::ModelPtr getNearestPuck();
     };
 }

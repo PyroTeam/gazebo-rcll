@@ -27,7 +27,10 @@
 #include <stack>
 #include <string.h>
 #include <gazsim_msgs/WorkpieceCommand.pb.h>
+#include <llsf_msgs/OrderInfo.pb.h>
 
+
+typedef const boost::shared_ptr<llsf_msgs::SetOrderDeliveredByColor const> ConstSetOrderDeliveredByColorPtr;
 typedef const boost::shared_ptr<gazsim_msgs::WorkpieceCommand const> ConstWorkpieceCommandPtr;
 /// The height of one ring
 #define RING_HEIGHT 0.008 //meter
@@ -35,6 +38,7 @@ typedef const boost::shared_ptr<gazsim_msgs::WorkpieceCommand const> ConstWorkpi
 #define CAP_HEIGHT 0.004 //meter
 /// The height of the workpiece base
 #define WORKPIECE_HEIGHT 0.0225 //meter
+#define TOPIC_SET_ORDER_DELIVERY_BY_COLOR "~/LLSFRbSim/DELIVERY"
 
 namespace gazebo
 {
@@ -61,12 +65,14 @@ namespace gazebo
     ///Node for communication
     transport::NodePtr node_;
     ///name of the puck and the communication channel
-    std::string name_;
+    inline std::string name();
 
     // Puck Stuff:
     
     /// Subscriber to get commands for model ring addition
     transport::SubscriberPtr command_subscriber;
+    
+    transport::PublisherPtr new_puck_publisher;
 
     /// Handler for command messages
     void on_command_msg(ConstWorkpieceCommandPtr &cmd);
@@ -74,14 +80,30 @@ namespace gazebo
     void add_ring(gazsim_msgs::Color clr);
     /// Add a cap on command
     void add_cap(gazsim_msgs::Color clr);
+    void remove_cap();
 
     /// The number of stored rings
     size_t ring_count_;
 
     /// Check, if we have a cap on top
     bool have_cap;
+    gazsim_msgs::Color cap_color_;
+
+    /// The color of the base
+    gazsim_msgs::Color base_color_;
+
+    /// The ring colors
+    std::vector<gazsim_msgs::Color> ring_colors_;
 
     /// Publisher to send visual changes to gazebo
     transport::PublisherPtr visual_pub_;
+    
+    /// Publisher to send command results
+    transport::PublisherPtr workpiece_result_pub_;
+    
+    msgs::Visual create_visual_msg(std::string element_name, double element_height, gazsim_msgs::Color clr);
+    
+    void deliver(gazsim_msgs::Team team);
+    transport::PublisherPtr delivery_pub_;
   };
 }
