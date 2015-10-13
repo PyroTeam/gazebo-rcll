@@ -169,6 +169,7 @@ void LightSignalDetection::on_light_msg(ConstMachineInfoPtr &msg)
 	}
 
 	// get machine message of nearest machine
+	printf("Colors : %d, %d, %d\n", state_red_, state_yellow_, state_green_);
 	if(min_dist < RADIUS_DETECTION_AREA){
 		//check if the signal changed
 		llsf_msgs::LightState old_red = state_red_;
