@@ -2,8 +2,8 @@
 <sdf version="1.4">
   <model name="tag">
     <static>true</static>
-    <link name="link">
-      <pose>0 0 0 0 0 0 </pose>
+<link name="link">
+<pose>0 0 0 0 0 0 </pose>
       <gravity>false</gravity>
       <!-- White background for tag -->
       
@@ -55,7 +55,7 @@
           <script>
             <uri>model://tags/materials/scripts</uri>
             <uri>model://tags/materials/textures</uri>
-            <name>tag/CBSI</name>
+            <name>tag/C-BSI</name>
           </script>
 	</material>
       </visual>
@@ -72,7 +72,7 @@
           <script>
             <uri>model://tags/materials/scripts</uri>
             <uri>model://tags/materials/textures</uri>
-            <name>tag/CBSO</name>
+            <name>tag/C-BSO</name>
           </script>
 	</material>
       </visual>
