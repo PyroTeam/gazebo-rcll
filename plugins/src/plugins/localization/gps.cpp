@@ -27,83 +27,83 @@ using namespace gazebo;
 // Register this plugin to make it available in the simulator
 GZ_REGISTER_MODEL_PLUGIN(Gps)
 
-///Constructor
+	///Constructor
 Gps::Gps()
 {
 }
 ///Destructor
 Gps::~Gps()
 {
-  printf("Destructing Gps Plugin!\n");
+	printf("Destructing Gps Plugin!\n");
 }
 
 /** on loading of the plugin
  * @param _parent Parent Model
  */
-void Gps::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/) 
+void Gps::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 {
-  // Store the pointer to the model
-  this->model_ = _parent;
+	// Store the pointer to the model
+	this->model_ = _parent;
 
-  //get the model-name
-  this->name_ = model_->GetName();
-  printf("Loading Gps Plugin of model %s\n", name_.c_str());
+	//get the model-name
+	this->name_ = model_->GetName();
+	printf("Loading Gps Plugin of model %s\n", name_.c_str());
 
-  // Listen to the update event. This event is broadcast every
-  // simulation iteration.
-  this->update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&Gps::OnUpdate, this, _1));
+	// Listen to the update event. This event is broadcast every
+	// simulation iteration.
+	this->update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&Gps::OnUpdate, this, _1));
 
-  //Create the communication Node for communication with fawkes
-  this->node_ = transport::NodePtr(new transport::Node());
-  //the namespace is set to the model name!
-  this->node_->Init(model_->GetWorld()->GetName()+"/"+name_);
+	//Create the communication Node for communication with fawkes
+	this->node_ = transport::NodePtr(new transport::Node());
+	//the namespace is set to the model name!
+	this->node_->Init(model_->GetWorld()->GetName()+"/"+name_);
 
-  //init last sent time
-  last_sent_time_ = model_->GetWorld()->GetSimTime().Double();
+	//init last sent time
+	last_sent_time_ = model_->GetWorld()->GetSimTime().Double();
 
-  //create publisher
-  this->gps_pub_ = this->node_->Advertise<msgs::Pose>("~/gazsim/gps/");
+	//create publisher
+	this->gps_pub_ = this->node_->Advertise<msgs::Pose>("~/gazsim/gps/");
 }
 
 
 /** Called by the world update start event
- */
+*/
 void Gps::OnUpdate(const common::UpdateInfo & /*_info*/)
 {
-  //Send position information to Fawkes
-  double time = model_->GetWorld()->GetSimTime().Double();
-  if(time - last_sent_time_ > (1.0 / 10.0))
-  {
-    last_sent_time_ = time;
-    send_position();
-  }
+	//Send position information to Fawkes
+	double time = model_->GetWorld()->GetSimTime().Double();
+	if(time - last_sent_time_ > (1.0 / 10.0))
+	{
+		last_sent_time_ = time;
+		send_position();
+	}
 }
 
 /** on Gazebo reset
- */
+*/
 void Gps::Reset()
 {
 }
 
 /** Sending position to Fawkes
- * 
+ *
  */
 void Gps::send_position()
 {
-  if(gps_pub_->HasConnections())
-  {
-    //build message
-    msgs::Pose posMsg;
-    posMsg.set_name(this->name_);
-    posMsg.mutable_position()->set_x(this->model_->GetWorldPose().pos.x);
-    posMsg.mutable_position()->set_y(this->model_->GetWorldPose().pos.y);
-    posMsg.mutable_position()->set_z(this->model_->GetWorldPose().pos.z);
-    posMsg.mutable_orientation()->set_x(this->model_->GetWorldPose().rot.x);
-    posMsg.mutable_orientation()->set_y(this->model_->GetWorldPose().rot.y);
-    posMsg.mutable_orientation()->set_z(this->model_->GetWorldPose().rot.z);
-    posMsg.mutable_orientation()->set_w(this->model_->GetWorldPose().rot.w);
+	if(gps_pub_->HasConnections())
+	{
+		//build message
+		msgs::Pose posMsg;
+		posMsg.set_name(this->name_);
+		posMsg.mutable_position()->set_x(this->model_->GetWorldPose().pos.x);
+		posMsg.mutable_position()->set_y(this->model_->GetWorldPose().pos.y);
+		posMsg.mutable_position()->set_z(this->model_->GetWorldPose().pos.z);
+		posMsg.mutable_orientation()->set_x(this->model_->GetWorldPose().rot.x);
+		posMsg.mutable_orientation()->set_y(this->model_->GetWorldPose().rot.y);
+		posMsg.mutable_orientation()->set_z(this->model_->GetWorldPose().rot.z);
+		posMsg.mutable_orientation()->set_w(this->model_->GetWorldPose().rot.w);
 
-    //send
-    gps_pub_->Publish(posMsg);
-  }
+		//send
+		gps_pub_->Publish(posMsg);
+	}
 }

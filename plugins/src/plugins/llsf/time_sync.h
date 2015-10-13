@@ -33,34 +33,34 @@
 
 namespace gazebo
 {
-  /**
-   *  syncs the simulation time with fawkes by sending the current real time factor
-   *
-   *  For comunication with the refbox, it uses the Protobuf-Adapter in Fawkes
-   */
-  class TimeSync
-  {
-  public:
-    //Constructor
-    TimeSync(physics::WorldPtr _world, transport::NodePtr gazebo_node);
-    ///Destructor
-    ~TimeSync();
+	/**
+	 *  syncs the simulation time with fawkes by sending the current real time factor
+	 *
+	 *  For comunication with the refbox, it uses the Protobuf-Adapter in Fawkes
+	 */
+	class TimeSync
+	{
+		public:
+			//Constructor
+			TimeSync(physics::WorldPtr _world, transport::NodePtr gazebo_node);
+			///Destructor
+			~TimeSync();
 
-    /// send protobuf msg with sim-time and real-time-factor
-    void send_time_sync();
+			/// send protobuf msg with sim-time and real-time-factor
+			void send_time_sync();
 
-  private:
-    ///Pointer to the communication node from gazebo
-    transport::NodePtr gazebo_node_;
-    ///World to get the time from
-    physics::WorldPtr world_; 
+		private:
+			///Pointer to the communication node from gazebo
+			transport::NodePtr gazebo_node_;
+			///World to get the time from
+			physics::WorldPtr world_;
 
-    ///Publisher for communication
-    transport::PublisherPtr time_sync_pub_;
+			///Publisher for communication
+			transport::PublisherPtr time_sync_pub_;
 
-    ///helper variables to calculate real time factor
-    double last_real_time_;
-    double last_sim_time_;
-  };
+			///helper variables to calculate real time factor
+			double last_real_time_;
+			double last_sim_time_;
+	};
 }
 #endif

@@ -28,16 +28,16 @@
 namespace gazebo
 {
 
-class DeliveryStation : public Mps
-{
-public:
-  DeliveryStation(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
-  
-  void on_puck_msg(ConstPosePtr &msg);
-  void new_machine_info(ConstMachine &machine);
-  
-  uint selected_gate_;
-};
+	class DeliveryStation : public Mps
+	{
+		public:
+			DeliveryStation(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
+
+			void on_puck_msg(ConstPosePtr &msg);
+			void new_machine_info(ConstMachine &machine);
+
+			uint selected_gate_;
+	};
 
 }
 

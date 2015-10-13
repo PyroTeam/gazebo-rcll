@@ -36,47 +36,47 @@
 
 
 namespace gazebo
-{   
-  /** @class Gyro
-   * Plugin for a conveyor vision sensor on a model
-   * @author Randolph Maaßen
-   */
-  class ConveyorVision : public ModelPlugin
-  {
-  public:
-    ///Constructor
-    ConveyorVision();
+{
+	/** @class Gyro
+	 * Plugin for a conveyor vision sensor on a model
+	 * @author Randolph Maaßen
+	 */
+	class ConveyorVision : public ModelPlugin
+	{
+		public:
+			///Constructor
+			ConveyorVision();
 
-    ///Destructor
-    ~ConveyorVision();
+			///Destructor
+			~ConveyorVision();
 
-    //Overridden ModelPlugin-Functions
-    virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
-    virtual void OnUpdate(const common::UpdateInfo &);
-    virtual void Reset();
+			//Overridden ModelPlugin-Functions
+			virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
+			virtual void OnUpdate(const common::UpdateInfo &);
+			virtual void Reset();
 
-  private:
-    /// Pointer to the model
-    physics::ModelPtr model_;
-    /// Pointer to the update event connection
-    event::ConnectionPtr update_connection_;
-    ///Node for communication to fawkes
-    transport::NodePtr node_;
-    ///name of the gyro and the communication channel
-    std::string name_;
+		private:
+			/// Pointer to the model
+			physics::ModelPtr model_;
+			/// Pointer to the update event connection
+			event::ConnectionPtr update_connection_;
+			///Node for communication to fawkes
+			transport::NodePtr node_;
+			///name of the gyro and the communication channel
+			std::string name_;
 
-    ///time variable to send in intervals
-    double last_sent_time_;
+			///time variable to send in intervals
+			double last_sent_time_;
 
-    ///time interval between to gyro msgs
-    double send_interval_;
+			///time interval between to gyro msgs
+			double send_interval_;
 
 
-    //Gyro Stuff:
-    ///Sending conveyor results to fawkes:
-    void send_conveyor_result();
+			//Gyro Stuff:
+			///Sending conveyor results to fawkes:
+			void send_conveyor_result();
 
-    ///Publisher for conveyr results
-    transport::PublisherPtr conveyor_pub_;  
-  };
+			///Publisher for conveyr results
+			transport::PublisherPtr conveyor_pub_;
+	};
 }

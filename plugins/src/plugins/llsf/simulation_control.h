@@ -31,28 +31,28 @@
 
 namespace gazebo
 {
-  /**
-   *  shuts down the simulation on request
-   */
-  class SimulationControl
-  {
-  public:
-    //Constructor
-    SimulationControl(physics::WorldPtr _world, transport::NodePtr gazebo_node);
-    ///Destructor
-    ~SimulationControl();
+	/**
+	 *  shuts down the simulation on request
+	 */
+	class SimulationControl
+	{
+		public:
+			//Constructor
+			SimulationControl(physics::WorldPtr _world, transport::NodePtr gazebo_node);
+			///Destructor
+			~SimulationControl();
 
-  private:
-    ///Pointer to the communication node from gazebo
-    transport::NodePtr gazebo_node_;
-    ///World to get the time from
-    physics::WorldPtr world_; 
+		private:
+			///Pointer to the communication node from gazebo
+			transport::NodePtr gazebo_node_;
+			///World to get the time from
+			physics::WorldPtr world_;
 
-    ///Publisher for communication
-    transport::SubscriberPtr simulation_control_sub_;
+			///Publisher for communication
+			transport::SubscriberPtr simulation_control_sub_;
 
-    ///msg handler
-    void on_string_msg(ConstHeaderPtr &msg);  
-  };
+			///msg handler
+			void on_string_msg(ConstHeaderPtr &msg);
+	};
 }
 #endif

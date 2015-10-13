@@ -30,25 +30,25 @@
 
 namespace gazebo {
 
-class RingStation : public Mps
-{
-public:
-  RingStation(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
-  
-  void on_puck_msg(ConstPosePtr &msg);
-  
-  void new_machine_info(ConstMachine &machine);
-  
-  std::string puck_in_processing_name_;
-  gazsim_msgs::Color color_to_put_;
-  
-  void add_base();
-  math::Pose add_base_pose();
-  u_int32_t number_bases_;
-  
-  gazebo::transport::PublisherPtr add_base_publisher_;
-  void publish_indicator(bool active, int number);
-};
+	class RingStation : public Mps
+	{
+		public:
+			RingStation(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
+
+			void on_puck_msg(ConstPosePtr &msg);
+
+			void new_machine_info(ConstMachine &machine);
+
+			std::string puck_in_processing_name_;
+			gazsim_msgs::Color color_to_put_;
+
+			void add_base();
+			math::Pose add_base_pose();
+			u_int32_t number_bases_;
+
+			gazebo::transport::PublisherPtr add_base_publisher_;
+			void publish_indicator(bool active, int number);
+	};
 
 }
 

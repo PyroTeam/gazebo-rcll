@@ -70,93 +70,93 @@ typedef const boost::shared_ptr<gazsim_msgs::NewPuck const> ConstNewPuckPtr;
 
 namespace gazebo
 {
-  /**
-   * Plugin to control a simulated MPS
-   * @author Frederik Zwilling
-   */
-  class Mps
-  {
-  public:
-    Mps(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
-    virtual ~Mps();
+	/**
+	 * Plugin to control a simulated MPS
+	 * @author Frederik Zwilling
+	 */
+	class Mps
+	{
+		public:
+			Mps(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
+			virtual ~Mps();
 
-    virtual void OnUpdate(const common::UpdateInfo &);
-    virtual void Reset();
+			virtual void OnUpdate(const common::UpdateInfo &);
+			virtual void Reset();
 
-  protected:
-    /// Pointer to the gazbeo model
-    physics::ModelPtr model_;
-    /// Pointer to the update event connection
-    event::ConnectionPtr update_connection_;
-    ///Node for communication
-    transport::NodePtr node_;
-    ///name of the mps and the communication channel
-    std::string name_;
+		protected:
+			/// Pointer to the gazbeo model
+			physics::ModelPtr model_;
+			/// Pointer to the update event connection
+			event::ConnectionPtr update_connection_;
+			///Node for communication
+			transport::NodePtr node_;
+			///name of the mps and the communication channel
+			std::string name_;
 
-    // Mps Stuff:
-    
-    /// Subscriber to get puck positions
-    std::vector<transport::SubscriberPtr> puck_subs_;
-    /// Subscriber to get machine infos
-    transport::SubscriberPtr machine_info_subscriber_;
+			// Mps Stuff:
 
-    /// Handler for puck positions
-    virtual void on_puck_msg(ConstPosePtr &msg);
-    /// Handler for machine msgs
-    void on_machine_msg(ConstMachineInfoPtr &msg);
-    virtual void new_machine_info(ConstMachine &machine);
-    
-    transport::SubscriberPtr new_puck_subscriber_;
-    virtual void on_new_puck(ConstNewPuckPtr &msg);
-    
-    ///Publisher to send machine state
-    transport::PublisherPtr set_machne_state_pub_;
-    
-    ///Publisher to send spawn machine tags
-    transport::PublisherPtr visPub_;
-    void spawnTag(std::string visual_name, std::string tag_name, float x, float y, float ori);
-    double spawned_tags_last_;
-    double created_time_;
+			/// Subscriber to get puck positions
+			std::vector<transport::SubscriberPtr> puck_subs_;
+			/// Subscriber to get machine infos
+			transport::SubscriberPtr machine_info_subscriber_;
 
-    ///centers of input and output areas (global)
-    virtual float input_x();
-    virtual float input_y();
-    virtual float output_x();
-    virtual float output_y();
-    
-    virtual math::Pose input();
-    virtual math::Pose output();
-    
-    /// convert puck pose from mps frame to world frame
-    math::Pose get_puck_world_pose(double long_side, double short_side, double height = BELT_HEIGHT);
-    
-    std::string current_state_;
-    
-    void set_state(State state);
-    
-    bool pose_hit(const math::Pose &to_test, const math::Pose &reference, double tolerance = DETECT_TOLERANCE);
-    
-    bool puck_in_input(ConstPosePtr &pose);
-    bool puck_in_output(ConstPosePtr &pose);
-    bool puck_in_input(const math::Pose &pose);
-    bool puck_in_output(const math::Pose &pose);
-    
-    physics::WorldPtr world_;
-    
-    void spawn_puck(const math::Pose &spawn_pose, enum gazsim_msgs::Color base_color);
-    
-    // Create a publisher on the ~/factory topic
-    transport::PublisherPtr factoryPub;
-    
-    /// Publisher for puck command
-    transport::PublisherPtr puck_cmd_pub_;
-    
-    transport::SubscriberPtr joint_message_sub_;
-    void on_joint_msg(ConstJointPtr &joint_msg);
-    
-    std::map<u_int32_t,std::string> hold_pucks;
-    bool is_puck_hold(std::string puck_name);
-  };
+			/// Handler for puck positions
+			virtual void on_puck_msg(ConstPosePtr &msg);
+			/// Handler for machine msgs
+			void on_machine_msg(ConstMachineInfoPtr &msg);
+			virtual void new_machine_info(ConstMachine &machine);
+
+			transport::SubscriberPtr new_puck_subscriber_;
+			virtual void on_new_puck(ConstNewPuckPtr &msg);
+
+			///Publisher to send machine state
+			transport::PublisherPtr set_machne_state_pub_;
+
+			///Publisher to send spawn machine tags
+			transport::PublisherPtr visPub_;
+			void spawnTag(std::string visual_name, std::string tag_name, float x, float y, float ori);
+			double spawned_tags_last_;
+			double created_time_;
+
+			///centers of input and output areas (global)
+			virtual float input_x();
+			virtual float input_y();
+			virtual float output_x();
+			virtual float output_y();
+
+			virtual math::Pose input();
+			virtual math::Pose output();
+
+			/// convert puck pose from mps frame to world frame
+			math::Pose get_puck_world_pose(double long_side, double short_side, double height = BELT_HEIGHT);
+
+			std::string current_state_;
+
+			void set_state(State state);
+
+			bool pose_hit(const math::Pose &to_test, const math::Pose &reference, double tolerance = DETECT_TOLERANCE);
+
+			bool puck_in_input(ConstPosePtr &pose);
+			bool puck_in_output(ConstPosePtr &pose);
+			bool puck_in_input(const math::Pose &pose);
+			bool puck_in_output(const math::Pose &pose);
+
+			physics::WorldPtr world_;
+
+			void spawn_puck(const math::Pose &spawn_pose, enum gazsim_msgs::Color base_color);
+
+			// Create a publisher on the ~/factory topic
+			transport::PublisherPtr factoryPub;
+
+			/// Publisher for puck command
+			transport::PublisherPtr puck_cmd_pub_;
+
+			transport::SubscriberPtr joint_message_sub_;
+			void on_joint_msg(ConstJointPtr &joint_msg);
+
+			std::map<u_int32_t,std::string> hold_pucks;
+			bool is_puck_hold(std::string puck_name);
+	};
 }
 
 #endif // MPS_H

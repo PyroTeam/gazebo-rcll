@@ -28,24 +28,24 @@
 
 using namespace gazebo;
 
-LlsfRefboxCommPlugin::LlsfRefboxCommPlugin() : WorldPlugin() 
+LlsfRefboxCommPlugin::LlsfRefboxCommPlugin() : WorldPlugin()
 {
-  //Init the communication Node
-  this->node_ = transport::NodePtr(new transport::Node());
-  this->node_->Init("LLSF");
+	//Init the communication Node
+	this->node_ = transport::NodePtr(new transport::Node());
+	this->node_->Init("LLSF");
 
-  //resolve path to proto dirs by using the environmental variable $GAZEBO_RCLL
-  const char * folder_path = ::getenv("GAZEBO_RCLL");
-  if ( folder_path == 0 ) {
-    printf("\n\n\nCan not find $GAZEBO_RCLL. Please set it in your .bashrc to the path to the gazebo-rcll folder.\n\n\n");
-    return;
-  }
-  else {
-    proto_dirs_ = {std::string(folder_path) + PROTO_DIR};
-  }
+	//resolve path to proto dirs by using the environmental variable $GAZEBO_RCLL
+	const char * folder_path = ::getenv("GAZEBO_RCLL");
+	if ( folder_path == 0 ) {
+		printf("\n\n\nCan not find $GAZEBO_RCLL. Please set it in your .bashrc to the path to the gazebo-rcll folder.\n\n\n");
+		return;
+	}
+	else {
+		proto_dirs_ = {std::string(folder_path) + PROTO_DIR};
+	}
 }
 
-LlsfRefboxCommPlugin::~LlsfRefboxCommPlugin() 
+LlsfRefboxCommPlugin::~LlsfRefboxCommPlugin()
 {
 }
 
@@ -55,74 +55,74 @@ LlsfRefboxCommPlugin::~LlsfRefboxCommPlugin()
  */
 void LlsfRefboxCommPlugin::Load(physics::WorldPtr _world, sdf::ElementPtr _sdf)
 {
-  world_ = _world;
-  
-  //create publisher and subscriber for connection with gazebo node
-  machine_info_pub_ = node_->Advertise<llsf_msgs::MachineInfo>(TOPIC_MACHINE_INFO);
-  game_state_pub_ = node_->Advertise<llsf_msgs::GameState>(TOPIC_GAME_STATE);
-  // puck_info_pub_ = node_->Advertise<llsf_msgs::PuckInfo>(config->get_string("/gazsim/topics/puck-info"));
-  // place_puck_under_machine_sub_ = node_->Subscribe(config->get_string("/gazsim/topics/place-puck-under-machine"), &LlsfRefboxCommPlugin::on_puck_place_msg, this);
-  // remove_puck_under_machine_sub_ = node_->Subscribe(config->get_string("/gazsim/topics/remove-puck-under-machine"), &LlsfRefboxCommPlugin::on_puck_remove_msg, this);
-  time_sync_sub_ = node_->Subscribe(TOPIC_TIME, &LlsfRefboxCommPlugin::on_time_sync_msg, this);
-  set_game_state_sub_ = node_->Subscribe(TOPIC_SET_GAME_STATE, &LlsfRefboxCommPlugin::on_set_game_state_msg, this);
-  set_game_phase_sub_ = node_->Subscribe(TOPIC_SET_GAME_PHASE, &LlsfRefboxCommPlugin::on_set_game_phase_msg, this);
-  set_team_name_sub_ = node_->Subscribe(TOPIC_SET_TEAM_NAME, &LlsfRefboxCommPlugin::on_set_team_name_msg, this);  
-  set_machine_state_sub_ = node_->Subscribe(TOPIC_SET_MACHINE_STATE, &LlsfRefboxCommPlugin::on_set_machine_state_msg, this);
-  machine_add_base_sub_ = node_->Subscribe(TOPIC_MACHINE_ADD_BASE, &LlsfRefboxCommPlugin::on_machine_add_base_msg, this);
-  set_order_deliverd_by_color_sub_ = node_->Subscribe(TOPIC_SET_ORDER_DELIVERY_BY_COLOR, &LlsfRefboxCommPlugin::on_set_order_delvered_by_color_msg, this);
+	world_ = _world;
 
-  //connect update function
-  update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&LlsfRefboxCommPlugin::Update, this));
-  printf("LLSF-refbox-connection-Plugin loaded!\n");
+	//create publisher and subscriber for connection with gazebo node
+	machine_info_pub_ = node_->Advertise<llsf_msgs::MachineInfo>(TOPIC_MACHINE_INFO);
+	game_state_pub_ = node_->Advertise<llsf_msgs::GameState>(TOPIC_GAME_STATE);
+	// puck_info_pub_ = node_->Advertise<llsf_msgs::PuckInfo>(config->get_string("/gazsim/topics/puck-info"));
+	// place_puck_under_machine_sub_ = node_->Subscribe(config->get_string("/gazsim/topics/place-puck-under-machine"), &LlsfRefboxCommPlugin::on_puck_place_msg, this);
+	// remove_puck_under_machine_sub_ = node_->Subscribe(config->get_string("/gazsim/topics/remove-puck-under-machine"), &LlsfRefboxCommPlugin::on_puck_remove_msg, this);
+	time_sync_sub_ = node_->Subscribe(TOPIC_TIME, &LlsfRefboxCommPlugin::on_time_sync_msg, this);
+	set_game_state_sub_ = node_->Subscribe(TOPIC_SET_GAME_STATE, &LlsfRefboxCommPlugin::on_set_game_state_msg, this);
+	set_game_phase_sub_ = node_->Subscribe(TOPIC_SET_GAME_PHASE, &LlsfRefboxCommPlugin::on_set_game_phase_msg, this);
+	set_team_name_sub_ = node_->Subscribe(TOPIC_SET_TEAM_NAME, &LlsfRefboxCommPlugin::on_set_team_name_msg, this);
+	set_machine_state_sub_ = node_->Subscribe(TOPIC_SET_MACHINE_STATE, &LlsfRefboxCommPlugin::on_set_machine_state_msg, this);
+	machine_add_base_sub_ = node_->Subscribe(TOPIC_MACHINE_ADD_BASE, &LlsfRefboxCommPlugin::on_machine_add_base_msg, this);
+	set_order_deliverd_by_color_sub_ = node_->Subscribe(TOPIC_SET_ORDER_DELIVERY_BY_COLOR, &LlsfRefboxCommPlugin::on_set_order_delvered_by_color_msg, this);
 
-  connected_ = false;
-  connect_tries_ = 0;
-  printf("Trying to connect to refbox\n");
-  //prepare client
-  create_client();
-  client_->async_connect(REFBOX_HOST, REFBOX_PORT);
+	//connect update function
+	update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&LlsfRefboxCommPlugin::Update, this));
+	printf("LLSF-refbox-connection-Plugin loaded!\n");
 
-  last_connect_try_ = world_->GetSimTime().Double();
+	connected_ = false;
+	connect_tries_ = 0;
+	printf("Trying to connect to refbox\n");
+	//prepare client
+	create_client();
+	client_->async_connect(REFBOX_HOST, REFBOX_PORT);
+
+	last_connect_try_ = world_->GetSimTime().Double();
 }
 
 void LlsfRefboxCommPlugin::Update()
-{ 
-  if(!connected_ && connect_tries_ < RECONNECT_ATTEMPTS)
-  {
-    //if not connected, try to reconnect every x seconds
-    double time = world_->GetSimTime().Double();
-    if((time - last_connect_try_) > RECONNECT_INTERVAL)
-    {
-      connect_tries_++;
-      printf("Trying to connect to refbox\n");
-      last_connect_try_ = time;
-      create_client();
-      client_->async_connect(REFBOX_HOST, REFBOX_PORT);
-    }
-  }
+{
+	if(!connected_ && connect_tries_ < RECONNECT_ATTEMPTS)
+	{
+		//if not connected, try to reconnect every x seconds
+		double time = world_->GetSimTime().Double();
+		if((time - last_connect_try_) > RECONNECT_INTERVAL)
+		{
+			connect_tries_++;
+			printf("Trying to connect to refbox\n");
+			last_connect_try_ = time;
+			create_client();
+			client_->async_connect(REFBOX_HOST, REFBOX_PORT);
+		}
+	}
 }
 /** Handler for successful connection to the client
- */
-void
+*/
+	void
 LlsfRefboxCommPlugin::client_connected()
 {
-  printf("LLSF-refbox-comm: Connected to Refbox\n");
-  connected_ = true;
+	printf("LLSF-refbox-comm: Connected to Refbox\n");
+	connected_ = true;
 }
 
 
 /** Handler for loss of connection to client
  * @param error boost error code
  */
-void
+	void
 LlsfRefboxCommPlugin::client_disconnected(const boost::system::error_code &error)
 {
-  printf("LLSF-refbox-comm: Disconnected\n");
-  connected_ = false;
-  
-  if(connect_tries_ == RECONNECT_ATTEMPTS){
-    printf("LLSF-refbox-comm: Refbox-connect failed %d times. Stop trying to connect.\n", RECONNECT_ATTEMPTS);
-  }
+	printf("LLSF-refbox-comm: Disconnected\n");
+	connected_ = false;
+
+	if(connect_tries_ == RECONNECT_ATTEMPTS){
+		printf("LLSF-refbox-comm: Refbox-connect failed %d times. Stop trying to connect.\n", RECONNECT_ATTEMPTS);
+	}
 }
 
 /** Handler for incoming msg from client
@@ -130,47 +130,47 @@ LlsfRefboxCommPlugin::client_disconnected(const boost::system::error_code &error
  * @param msg_type type of protobuf msg
  * @param msg pointer to protobuf msg
  */
-void
+	void
 LlsfRefboxCommPlugin::client_msg(uint16_t comp_id, uint16_t msg_type,
-			     std::shared_ptr<google::protobuf::Message> msg)
+		std::shared_ptr<google::protobuf::Message> msg)
 {
-  //printf("LLSF-refbox-comm: Got Message from refbox: %s\n", msg->GetTypeName().c_str());
-  
-  //Filter wanted messages
-  if(msg->GetTypeName() == "llsf_msgs.MachineInfo")
-  {
-    machine_info_pub_->Publish(*msg);
-    return;
-  }
-  
-  if(msg->GetTypeName() == "llsf_msgs.GameState")
-  {
-    game_state_pub_->Publish(*msg);
-    return;
-  }
-  
-  // if(msg->GetTypeName() == "llsf_msgs.PuckInfo")
-  // {
-  //   //logger->log_info(name(), "Sending PuckInfo to gazebo");
-  //   puck_info_pub_->Publish(*msg);
-  //   return;
-  // }
+	//printf("LLSF-refbox-comm: Got Message from refbox: %s\n", msg->GetTypeName().c_str());
+
+	//Filter wanted messages
+	if(msg->GetTypeName() == "llsf_msgs.MachineInfo")
+	{
+		machine_info_pub_->Publish(*msg);
+		return;
+	}
+
+	if(msg->GetTypeName() == "llsf_msgs.GameState")
+	{
+		game_state_pub_->Publish(*msg);
+		return;
+	}
+
+	// if(msg->GetTypeName() == "llsf_msgs.PuckInfo")
+	// {
+	//   //logger->log_info(name(), "Sending PuckInfo to gazebo");
+	//   puck_info_pub_->Publish(*msg);
+	//   return;
+	// }
 }
 
 void LlsfRefboxCommPlugin::create_client()
 {
-  //create message register with all messages to listen for
-  message_register_ = new protobuf_comm::MessageRegister(proto_dirs_);
+	//create message register with all messages to listen for
+	message_register_ = new protobuf_comm::MessageRegister(proto_dirs_);
 
-  //create client and register handlers
-  client_ = new protobuf_comm::ProtobufStreamClient(message_register_);
-  client_->signal_connected().connect(
-    boost::bind(&LlsfRefboxCommPlugin::client_connected, this));
-  client_->signal_disconnected().connect(
-    boost::bind(&LlsfRefboxCommPlugin::client_disconnected,
-  		this, boost::asio::placeholders::error));
-  client_->signal_received().connect(
-    boost::bind(&LlsfRefboxCommPlugin::client_msg, this, _1, _2, _3));
+	//create client and register handlers
+	client_ = new protobuf_comm::ProtobufStreamClient(message_register_);
+	client_->signal_connected().connect(
+			boost::bind(&LlsfRefboxCommPlugin::client_connected, this));
+	client_->signal_disconnected().connect(
+			boost::bind(&LlsfRefboxCommPlugin::client_disconnected,
+				this, boost::asio::placeholders::error));
+	client_->signal_received().connect(
+			boost::bind(&LlsfRefboxCommPlugin::client_msg, this, _1, _2, _3));
 }
 
 // void LlsfRefboxCommPlugin::on_puck_place_msg(ConstPlacePuckUnderMachinePtr &msg)
@@ -183,81 +183,81 @@ void LlsfRefboxCommPlugin::create_client()
 
 void LlsfRefboxCommPlugin::on_time_sync_msg(ConstSimTimePtr &msg)
 {
-  // printf("LLSF-refbox-comm: Sending Simulation Time\n");
-  
-  //provide time source with newest message
-  if(!connected_)
-  {
-    return;
-  }
-  //fill msg for refbox with info from gazsim_msg
-  llsf_msgs::SimTimeSync to_rb;
-  llsf_msgs::Time* time = to_rb.mutable_sim_time();
-  time->set_sec(msg->sim_time_sec());
-  time->set_nsec(msg->sim_time_nsec());
-  to_rb.set_real_time_factor(msg->real_time_factor());
-  to_rb.set_paused(msg->paused());
+	// printf("LLSF-refbox-comm: Sending Simulation Time\n");
 
-  //send it and make refbox able to handle the msg
-  client_->send(to_rb);
+	//provide time source with newest message
+	if(!connected_)
+	{
+		return;
+	}
+	//fill msg for refbox with info from gazsim_msg
+	llsf_msgs::SimTimeSync to_rb;
+	llsf_msgs::Time* time = to_rb.mutable_sim_time();
+	time->set_sec(msg->sim_time_sec());
+	time->set_nsec(msg->sim_time_nsec());
+	to_rb.set_real_time_factor(msg->real_time_factor());
+	to_rb.set_paused(msg->paused());
+
+	//send it and make refbox able to handle the msg
+	client_->send(to_rb);
 }
 
 void LlsfRefboxCommPlugin::on_set_game_state_msg(ConstSetGameStatePtr &msg)
 {
-  if(!connected_)
-  {
-    return;
-  }
-  llsf_msgs::SetGameState to_rb = *msg;
-  client_->send(to_rb);
+	if(!connected_)
+	{
+		return;
+	}
+	llsf_msgs::SetGameState to_rb = *msg;
+	client_->send(to_rb);
 }
 
 void LlsfRefboxCommPlugin::on_set_game_phase_msg(ConstSetGamePhasePtr &msg)
 {
-  if(!connected_)
-  {
-    return;
-  }
-  llsf_msgs::SetGamePhase to_rb = *msg;
-  client_->send(to_rb);
+	if(!connected_)
+	{
+		return;
+	}
+	llsf_msgs::SetGamePhase to_rb = *msg;
+	client_->send(to_rb);
 }
 
 void LlsfRefboxCommPlugin::on_set_team_name_msg(ConstSetTeamNamePtr &msg)
 {
-  if(!connected_)
-  {
-    return;
-  }
-  llsf_msgs::SetTeamName to_rb = *msg;
-  client_->send(to_rb);
+	if(!connected_)
+	{
+		return;
+	}
+	llsf_msgs::SetTeamName to_rb = *msg;
+	client_->send(to_rb);
 }
 
 void LlsfRefboxCommPlugin::on_set_machine_state_msg(ConstSetMachineStatePtr &msg)
 {
-  if(!connected_)
-  {
-    return;
-  }
-  llsf_msgs::SetMachineState to_rb = *msg;
-  client_->send(to_rb);
+	if(!connected_)
+	{
+		return;
+	}
+	llsf_msgs::SetMachineState to_rb = *msg;
+	client_->send(to_rb);
 }
 
 void LlsfRefboxCommPlugin::on_machine_add_base_msg(ConstMachineAddBasePtr &msg)
 {
-  if(!connected_)
-  {
-    return;
-  }
-  llsf_msgs::MachineAddBase to_rb = *msg;
-  client_->send(to_rb);
+	if(!connected_)
+	{
+		return;
+	}
+	llsf_msgs::MachineAddBase to_rb = *msg;
+	client_->send(to_rb);
 }
 
 void LlsfRefboxCommPlugin::on_set_order_delvered_by_color_msg(ConstSetOrderDeliveredByColorPtr &msg)
 {
-  if(!connected_)
-  {
-    return;
-  }
-  llsf_msgs::SetOrderDeliveredByColor to_rb = *msg;
-  client_->send(to_rb);
+	if(!connected_)
+	{
+		return;
+	}
+	llsf_msgs::SetOrderDeliveredByColor to_rb = *msg;
+	client_->send(to_rb);
 }

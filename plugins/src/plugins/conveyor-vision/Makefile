@@ -29,28 +29,28 @@ OBJS_gazebo_libconveyor_vision = conveyor_vision.o
 OBJS_all    = $(OBJS_gazebo_libconveyor_vision)
 
 ifeq ($(HAVE_GAZEBO)$(HAVE_PROTOBUF),11)
-  CFLAGS  += $(CFLAGS_GAZEBO) $(CFLAGS_PROTOBUF)
-  LDFLAGS += $(LDFLAGS_GAZEBO) $(LDFLAGS_PROTOBUF) -lm $(call boost-libs-ldflags,system) -lboost_system
+	CFLAGS  += $(CFLAGS_GAZEBO) $(CFLAGS_PROTOBUF)
+	LDFLAGS += $(LDFLAGS_GAZEBO) $(LDFLAGS_PROTOBUF) -lm $(call boost-libs-ldflags,system) -lboost_system
 
-  LIBS_all = $(LIBDIR)/gazebo/libconveyor_vision.so
+LIBS_all = $(LIBDIR)/gazebo/libconveyor_vision.so
 else
-  ifneq ($(HAVE_GAZEBO),1)
-    WARN_TARGETS += warning_gazebo
-  endif
-  ifneq ($(HAVE_PROTOBUF),1)
-    WARN_TARGETS += warning_protobuf
-  endif
+	ifneq ($(HAVE_GAZEBO),1)
+	WARN_TARGETS += warning_gazebo
+endif
+ifneq ($(HAVE_PROTOBUF),1)
+	WARN_TARGETS += warning_protobuf
+endif
 endif
 
 ifeq ($(OBJSSUBMAKE),1)
-all: $(WARN_TARGETS)
-.PHONY: warning_gazebo warning_protobuf
+	all: $(WARN_TARGETS)
+	.PHONY: warning_gazebo warning_protobuf
 warning_gazebo:
 	$(SILENT)echo -e "$(INDENT_PRINT)--> $(TRED)Omitting gazebo-conveyor-vision Plugin$(TNORMAL) " \
 		"(Gazebo Simulator not found)"
 warning_protobuf:
 	$(SILENT)echo -e "$(INDENT_PRINT)--> $(TRED)Omitting gazebo-conveyor-vision Plugin$(TNORMAL) " \
 		"(protobuf[-devel] not installed)"
-endif
+	endif
 
 include $(BUILDSYSDIR)/base.mk

@@ -28,46 +28,46 @@
 #include <string.h>
 
 namespace gazebo
-{   
-  /** @class Motor
-   * Motor plugin for Gazebo
-   * @author Frederik Zwilling
-   */
-  class Motor : public ModelPlugin
-  {
-  public:
-    ///Constructor
-    Motor();
+{
+	/** @class Motor
+	 * Motor plugin for Gazebo
+	 * @author Frederik Zwilling
+	 */
+	class Motor : public ModelPlugin
+	{
+		public:
+			///Constructor
+			Motor();
 
-    ///Destructor
-    ~Motor();
+			///Destructor
+			~Motor();
 
-    //Overridden ModelPlugin-Functions
-    virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
-    virtual void OnUpdate(const common::UpdateInfo &);
-    virtual void Reset();
+			//Overridden ModelPlugin-Functions
+			virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
+			virtual void OnUpdate(const common::UpdateInfo &);
+			virtual void Reset();
 
-  private:
-    /// Pointer to the Gazebo model
-    physics::ModelPtr model_;
-    /// Pointer to the update event connection
-    event::ConnectionPtr update_connection_;
-    ///Node for communication to fawkes
-    transport::NodePtr node_;
-    ///name of the motor and the communication channel
-    std::string name_;
-
-
-    //Motor Stuff:
-    void on_motor_move_msg(ConstVector3dPtr &msg);
-
-    ///Suscriber for MotorMove Interfaces from Fawkes
-    transport::SubscriberPtr motor_move_sub_;
+		private:
+			/// Pointer to the Gazebo model
+			physics::ModelPtr model_;
+			/// Pointer to the update event connection
+			event::ConnectionPtr update_connection_;
+			///Node for communication to fawkes
+			transport::NodePtr node_;
+			///name of the motor and the communication channel
+			std::string name_;
 
 
-    //current movement commands:
-    float vx_;
-    float vy_;
-    float vomega_;  
-  };
+			//Motor Stuff:
+			void on_motor_move_msg(ConstVector3dPtr &msg);
+
+			///Suscriber for MotorMove Interfaces from Fawkes
+			transport::SubscriberPtr motor_move_sub_;
+
+
+			//current movement commands:
+			float vx_;
+			float vy_;
+			float vomega_;
+	};
 }

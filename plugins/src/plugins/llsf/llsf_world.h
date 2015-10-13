@@ -31,54 +31,54 @@
 
 namespace gazebo
 {
-  /**
-   * Main plugin for the LLSF field
-   */
-  class LlsfWorldPlugin : public WorldPlugin
-  {
-  public:
-    ///Constructor
-    LlsfWorldPlugin();
-    ///Destructor
-    ~LlsfWorldPlugin();
+	/**
+	 * Main plugin for the LLSF field
+	 */
+	class LlsfWorldPlugin : public WorldPlugin
+	{
+		public:
+			///Constructor
+			LlsfWorldPlugin();
+			///Destructor
+			~LlsfWorldPlugin();
 
-    virtual void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf);
+			virtual void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf);
 
 
-  private:
-    ///update function
-    void Update();
-    event::ConnectionPtr update_connection_;
+		private:
+			///update function
+			void Update();
+			event::ConnectionPtr update_connection_;
 
-    ///Node for communication
-    transport::NodePtr node_;
-    
-    physics::WorldPtr world_;
+			///Node for communication
+			transport::NodePtr node_;
 
-    ///Table with simulation data
-    LlsfDataTable *table_;
+			physics::WorldPtr world_;
 
-    ///Controller of machine light signals
-    LightControl *light_control_;
+			///Table with simulation data
+			LlsfDataTable *table_;
 
-    PuckLocalization *puck_localization_;
+			///Controller of machine light signals
+			LightControl *light_control_;
 
-    ///the field referee removes finished pucks
-    FieldReferee *field_referee_;
-    
-    ///checks if there is a puck under the rfid
-    RfidSensors *rfid_sensors_;
+			PuckLocalization *puck_localization_;
 
-    ///Sync the time with fawkes and the refbox
-    TimeSync *time_sync_;
+			///the field referee removes finished pucks
+			FieldReferee *field_referee_;
 
-    ///Stop gazebo on request
-    SimulationControl *simulation_control_;
+			///checks if there is a puck under the rfid
+			RfidSensors *rfid_sensors_;
 
-    double puck_update_frequency_;
-    double time_sync_frequency_;
-    double last_puck_update_;
-    double last_time_sync_;
-  };
-  GZ_REGISTER_WORLD_PLUGIN(LlsfWorldPlugin)
+			///Sync the time with fawkes and the refbox
+			TimeSync *time_sync_;
+
+			///Stop gazebo on request
+			SimulationControl *simulation_control_;
+
+			double puck_update_frequency_;
+			double time_sync_frequency_;
+			double last_puck_update_;
+			double last_time_sync_;
+	};
+	GZ_REGISTER_WORLD_PLUGIN(LlsfWorldPlugin)
 }

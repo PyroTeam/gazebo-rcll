@@ -34,11 +34,11 @@ using namespace gazebo;
  */
 SimulationControl::SimulationControl(physics::WorldPtr world, transport::NodePtr gazebo_node)
 {
-  gazebo_node_ = gazebo_node;
-  world_ = world;
+	gazebo_node_ = gazebo_node;
+	world_ = world;
 
-  //create subscriber
-  this->simulation_control_sub_ = gazebo_node_->Subscribe(std::string("~/LLSF/Control/"), &SimulationControl::on_string_msg, this);
+	//create subscriber
+	this->simulation_control_sub_ = gazebo_node_->Subscribe(std::string("~/LLSF/Control/"), &SimulationControl::on_string_msg, this);
 }
 
 SimulationControl::~SimulationControl()
@@ -47,11 +47,11 @@ SimulationControl::~SimulationControl()
 
 void SimulationControl::on_string_msg(ConstHeaderPtr &msg)
 {
-  // if(msg->str_id().c_str().compare("end") == 0)
-  // {
-  //   //shutdown simulation
-  //   printf("Executing stop request\n");
-  //   world_->Stop();
-  // }
+	// if(msg->str_id().c_str().compare("end") == 0)
+	// {
+	//   //shutdown simulation
+	//   printf("Executing stop request\n");
+	//   world_->Stop();
+	// }
 }
 

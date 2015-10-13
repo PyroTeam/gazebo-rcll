@@ -44,51 +44,51 @@ typedef const boost::shared_ptr<llsf_msgs::GameState const> ConstGameStatePtr;
 
 namespace gazebo
 {
-  /**
-   * Plugin to place the MPSs as specified by the refbox
-   * @author Frederik Zwilling
-   */
-  class MpsPlacementPlugin : public WorldPlugin
-  {
-  public:
-    MpsPlacementPlugin();
-   ~MpsPlacementPlugin();
+	/**
+	 * Plugin to place the MPSs as specified by the refbox
+	 * @author Frederik Zwilling
+	 */
+	class MpsPlacementPlugin : public WorldPlugin
+	{
+		public:
+			MpsPlacementPlugin();
+			~MpsPlacementPlugin();
 
-    //Overridden ModelPlugin-Functions
-    virtual void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf);
-    virtual void Reset();
+			//Overridden ModelPlugin-Functions
+			virtual void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf);
+			virtual void Reset();
 
-  private:
-    /// Pointer to the gazbeo world
-    physics::WorldPtr world_;
-    ///Node for communication
-    transport::NodePtr node_;
+		private:
+			/// Pointer to the gazbeo world
+			physics::WorldPtr world_;
+			///Node for communication
+			transport::NodePtr node_;
 
-    // MpsPlacementPlugin Stuff:
-    
-    /// Subscriber to get Machine Info from refbox
-    transport::SubscriberPtr machine_info_sub_;
-    
-    /// Subscriber to get Game state msgs
-    transport::SubscriberPtr game_state_sub_;
+			// MpsPlacementPlugin Stuff:
 
-    /// Spawn machine at a position
-    void spawn_mps(const math::Pose &spawn_pose, std::string model_name);
+			/// Subscriber to get Machine Info from refbox
+			transport::SubscriberPtr machine_info_sub_;
 
-    ///Remove existing MPS (e.g. before spawning them at other location)
-    void remove_existing_mps();
+			/// Subscriber to get Game state msgs
+			transport::SubscriberPtr game_state_sub_;
 
-    /// Handler for getting refbox msgs
-    void on_machine_info_msg(ConstMachineInfoPtr &msg);
-    void on_game_state_msg(ConstGameStatePtr &msg);
-    
-    bool machines_placed_;
-    bool is_game_started_;
-    int random_seed_base_;
+			/// Spawn machine at a position
+			void spawn_mps(const math::Pose &spawn_pose, std::string model_name);
 
-    // Create a publisher on the ~/factory topic to spawn models
-    transport::PublisherPtr factoryPub;
-    transport::PublisherPtr modelPub;
-  };
-  GZ_REGISTER_WORLD_PLUGIN(MpsPlacementPlugin)
+			///Remove existing MPS (e.g. before spawning them at other location)
+			void remove_existing_mps();
+
+			/// Handler for getting refbox msgs
+			void on_machine_info_msg(ConstMachineInfoPtr &msg);
+			void on_game_state_msg(ConstGameStatePtr &msg);
+
+			bool machines_placed_;
+			bool is_game_started_;
+			int random_seed_base_;
+
+			// Create a publisher on the ~/factory topic to spawn models
+			transport::PublisherPtr factoryPub;
+			transport::PublisherPtr modelPub;
+	};
+	GZ_REGISTER_WORLD_PLUGIN(MpsPlacementPlugin)
 }

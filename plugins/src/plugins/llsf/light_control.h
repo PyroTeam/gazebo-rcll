@@ -27,7 +27,7 @@
 #include "data_table.h"
 
 namespace gazebo
-{  
+{
   typedef enum Color
   {
     RED,
@@ -46,12 +46,12 @@ namespace gazebo
    */
   class LightControl
   {
-  public: 
+  public:
     //Constructor
     LightControl(physics::WorldPtr world);
     ///Deconstructor
     virtual ~LightControl();
-    
+
     /// what to do on plugin update (set lights according to the data table)
     void update();
 

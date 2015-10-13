@@ -60,77 +60,77 @@ typedef const boost::shared_ptr<llsf_msgs::SetOrderDeliveredByColor const> Const
 #define TOPIC_SET_ORDER_DELIVERY_BY_COLOR "~/LLSFRbSim/DELIVERY"
 
 namespace protobuf_comm {
-  class ProtobufStreamClient;
+	class ProtobufStreamClient;
 }
 
 namespace gazebo
 {
-  /**
-   * World plugin for the refbox connection in the llsf
-   * Basically it gets the peer msgs from the refbox and publishes these msgs in gazebo
-   */
-  class LlsfRefboxCommPlugin : public WorldPlugin
-  {
-  public:
-    ///Constructor
-    LlsfRefboxCommPlugin();
-    ///Destructor
-    ~LlsfRefboxCommPlugin();
+	/**
+	 * World plugin for the refbox connection in the llsf
+	 * Basically it gets the peer msgs from the refbox and publishes these msgs in gazebo
+	 */
+	class LlsfRefboxCommPlugin : public WorldPlugin
+	{
+		public:
+			///Constructor
+			LlsfRefboxCommPlugin();
+			///Destructor
+			~LlsfRefboxCommPlugin();
 
-    virtual void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf);
+			virtual void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf);
 
-    ///on refbox connection established
-    void client_connected();
-    ///on refbox connection lost
-    void client_disconnected(const boost::system::error_code &error);
-    ///on message from the refbox
-    void client_msg(uint16_t comp_id, uint16_t msg_type,
-		    std::shared_ptr<google::protobuf::Message> msg);
+			///on refbox connection established
+			void client_connected();
+			///on refbox connection lost
+			void client_disconnected(const boost::system::error_code &error);
+			///on message from the refbox
+			void client_msg(uint16_t comp_id, uint16_t msg_type,
+					std::shared_ptr<google::protobuf::Message> msg);
 
-  private:
-    ///update function
-    void Update();
-    event::ConnectionPtr update_connection_;
+		private:
+			///update function
+			void Update();
+			event::ConnectionPtr update_connection_;
 
-    ///Node for communication
-    transport::NodePtr node_;
-    physics::WorldPtr world_;
+			///Node for communication
+			transport::NodePtr node_;
+			physics::WorldPtr world_;
 
-    protobuf_comm::ProtobufStreamClient *client_;
-    std::vector<std::string> proto_dirs_;
-    protobuf_comm::MessageRegister      *message_register_;
+			protobuf_comm::ProtobufStreamClient *client_;
+			std::vector<std::string> proto_dirs_;
+			protobuf_comm::MessageRegister      *message_register_;
 
-    //Publisher and subscriber for the connection to gazebo
-    gazebo::transport::PublisherPtr machine_info_pub_;
-    gazebo::transport::PublisherPtr game_state_pub_;
-    /* gazebo::transport::SubscriberPtr place_puck_under_machine_sub_; */
-    /* gazebo::transport::SubscriberPtr remove_puck_under_machine_sub_; */
-    gazebo::transport::SubscriberPtr time_sync_sub_;
-    gazebo::transport::SubscriberPtr set_game_state_sub_;
-    gazebo::transport::SubscriberPtr set_game_phase_sub_;
-    gazebo::transport::SubscriberPtr set_team_name_sub_;
-    gazebo::transport::SubscriberPtr set_machine_state_sub_;
-    gazebo::transport::SubscriberPtr machine_add_base_sub_;
-    gazebo::transport::SubscriberPtr set_order_deliverd_by_color_sub_;
+			//Publisher and subscriber for the connection to gazebo
+			gazebo::transport::PublisherPtr machine_info_pub_;
+			gazebo::transport::PublisherPtr game_state_pub_;
+			/* gazebo::transport::SubscriberPtr place_puck_under_machine_sub_; */
+			/* gazebo::transport::SubscriberPtr remove_puck_under_machine_sub_; */
+			gazebo::transport::SubscriberPtr time_sync_sub_;
+			gazebo::transport::SubscriberPtr set_game_state_sub_;
+			gazebo::transport::SubscriberPtr set_game_phase_sub_;
+			gazebo::transport::SubscriberPtr set_team_name_sub_;
+			gazebo::transport::SubscriberPtr set_machine_state_sub_;
+			gazebo::transport::SubscriberPtr machine_add_base_sub_;
+			gazebo::transport::SubscriberPtr set_order_deliverd_by_color_sub_;
 
-    //handler methods
-    /* void on_puck_place_msg(ConstPlacePuckUnderMachinePtr &msg); */
-    /* void on_puck_remove_msg(ConstRemovePuckFromMachinePtr &msg); */
-    void on_time_sync_msg(ConstSimTimePtr &msg);
-    void on_set_game_state_msg(ConstSetGameStatePtr &msg);
-    void on_set_game_phase_msg(ConstSetGamePhasePtr &msg);
-    void on_set_team_name_msg(ConstSetTeamNamePtr &msg);
-    void on_set_machine_state_msg(ConstSetMachineStatePtr &msg);
-    void on_machine_add_base_msg(ConstMachineAddBasePtr &msg);
-    void on_set_order_delvered_by_color_msg(ConstSetOrderDeliveredByColorPtr &msg);
+			//handler methods
+			/* void on_puck_place_msg(ConstPlacePuckUnderMachinePtr &msg); */
+			/* void on_puck_remove_msg(ConstRemovePuckFromMachinePtr &msg); */
+			void on_time_sync_msg(ConstSimTimePtr &msg);
+			void on_set_game_state_msg(ConstSetGameStatePtr &msg);
+			void on_set_game_phase_msg(ConstSetGamePhasePtr &msg);
+			void on_set_team_name_msg(ConstSetTeamNamePtr &msg);
+			void on_set_machine_state_msg(ConstSetMachineStatePtr &msg);
+			void on_machine_add_base_msg(ConstMachineAddBasePtr &msg);
+			void on_set_order_delvered_by_color_msg(ConstSetOrderDeliveredByColorPtr &msg);
 
-    //helper variables
-    bool connected_;
-    double last_connect_try_;
-    int connect_tries_;
+			//helper variables
+			bool connected_;
+			double last_connect_try_;
+			int connect_tries_;
 
-    void create_client();
-    
-  };
-  GZ_REGISTER_WORLD_PLUGIN(LlsfRefboxCommPlugin)
+			void create_client();
+
+	};
+	GZ_REGISTER_WORLD_PLUGIN(LlsfRefboxCommPlugin)
 }

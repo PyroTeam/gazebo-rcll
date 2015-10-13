@@ -29,20 +29,20 @@
 namespace gazebo
 {
 
-class MpsLoader : public ModelPlugin
-{
-public:
-  MpsLoader();
-  ~MpsLoader();
-  
-  //Overridden ModelPlugin-Functions
-  virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
-  virtual void OnUpdate(const common::UpdateInfo &);
-  virtual void Reset();
-  
-private:
-  Mps *mps_;
-};
+	class MpsLoader : public ModelPlugin
+	{
+		public:
+			MpsLoader();
+			~MpsLoader();
+
+			//Overridden ModelPlugin-Functions
+			virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
+			virtual void OnUpdate(const common::UpdateInfo &);
+			virtual void Reset();
+
+		private:
+			Mps *mps_;
+	};
 
 }
 

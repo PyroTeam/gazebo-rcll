@@ -32,28 +32,28 @@ REQ_BOOST_LIBS = system
 HAVE_BOOST_LIBS = $(call boost-have-libs,$(REQ_BOOST_LIBS))
 
 ifeq ($(HAVE_GAZEBO)$(HAVE_PROTOBUF)$(HAVE_BOOST_LIBS),111)
-  CFLAGS  += $(CFLAGS_PROTOBUF) \
-	     $(call boost-libs-cflags,$(REQ_BOOST_LIBS)) \
-	     $(CFLAGS_GAZEBO)
-  LDFLAGS += $(LDFLAGS_PROTOBUF) \
-	     $(call boost-libs-ldflags,$(REQ_BOOST_LIBS)) \
-	     $(LDFLAGS_GAZEBO)
+	CFLAGS  += $(CFLAGS_PROTOBUF) \
+			   $(call boost-libs-cflags,$(REQ_BOOST_LIBS)) \
+			   $(CFLAGS_GAZEBO)
+	LDFLAGS += $(LDFLAGS_PROTOBUF) \
+			   $(call boost-libs-ldflags,$(REQ_BOOST_LIBS)) \
+			   $(LDFLAGS_GAZEBO)
 
-  LIBS_all = $(LIBDIR)/gazebo/libllsf_refbox_comm.so
+LIBS_all = $(LIBDIR)/gazebo/libllsf_refbox_comm.so
 else
-  ifneq ($(HAVE_GAZEBO),1)
-    WARN_TARGETS += warning_gazebo
-  endif
-  ifneq ($(HAVE_PROTOBUF),1)
-    WARN_TARGETS += warning_protobuf
-  endif
-  ifneq ($(HAVE_BOOST_LIBS),1)
-    WARN_TARGETS += warning_boost
-  endif
+	ifneq ($(HAVE_GAZEBO),1)
+	WARN_TARGETS += warning_gazebo
+endif
+ifneq ($(HAVE_PROTOBUF),1)
+	WARN_TARGETS += warning_protobuf
+endif
+ifneq ($(HAVE_BOOST_LIBS),1)
+	WARN_TARGETS += warning_boost
+endif
 endif
 
 ifeq ($(OBJSSUBMAKE),1)
-all: $(WARN_TARGETS)
+	all: $(WARN_TARGETS)
 
 .PHONY: warning_protobuf warning_gazebo warning_boost
 warning_gazebo:
@@ -65,7 +65,7 @@ warning_protobuf:
 warning_boost:
 	$(SILENT)echo -e "$(INDENT_PRINT)--> $(TRED)Omitting llsf-refbox-comm Plugin$(TNORMAL) " \
 		"(req. boost libs not found)"
-endif
+	endif
 
 
 include $(BUILDSYSDIR)/base.mk

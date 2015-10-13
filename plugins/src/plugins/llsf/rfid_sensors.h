@@ -34,28 +34,28 @@
 
 namespace gazebo
 {
-  /**
-   * checks if a puck is under a rfid sensor
-   *
-   * (only works if you do not move the field)
-   */
-  class RfidSensors
-  {
-  public: 
-    ///Constructor
-    RfidSensors();
-    ///Deconstructor
-    ~RfidSensors();
-    
-    ///what to do on the plugin update (check for puck under rfid-sensors and write results to data table)
-    void update();
+	/**
+	 * checks if a puck is under a rfid sensor
+	 *
+	 * (only works if you do not move the field)
+	 */
+	class RfidSensors
+	{
+		public:
+			///Constructor
+			RfidSensors();
+			///Deconstructor
+			~RfidSensors();
 
-  private:
-    ///time variable to send in intervals
-    double last_sent_time_;
+			///what to do on the plugin update (check for puck under rfid-sensors and write results to data table)
+			void update();
 
-    ///Pointer to simulation data
-    LlsfDataTable *table_;
-  };
+		private:
+			///time variable to send in intervals
+			double last_sent_time_;
+
+			///Pointer to simulation data
+			LlsfDataTable *table_;
+	};
 }
 #endif

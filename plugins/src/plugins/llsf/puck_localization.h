@@ -28,25 +28,25 @@
 
 namespace gazebo
 {
- /**
-   * locates all pucks and writes position in table
-   */
-  class PuckLocalization
-  {
-  public: 
-    //Constructor
-    PuckLocalization(physics::WorldPtr world);
-    ///Deconstructor
-    ~PuckLocalization();
+	/**
+	 * locates all pucks and writes position in table
+	 */
+	class PuckLocalization
+	{
+		public:
+			//Constructor
+			PuckLocalization(physics::WorldPtr world);
+			///Deconstructor
+			~PuckLocalization();
 
-    ///what to do on plugin update (write puck positions into data table)
-    void update();
+			///what to do on plugin update (write puck positions into data table)
+			void update();
 
-  private:
-    ///Pointer to simulation data
-    LlsfDataTable *table_;
-    
-    physics::WorldPtr world_;
-  };
+		private:
+			///Pointer to simulation data
+			LlsfDataTable *table_;
+
+			physics::WorldPtr world_;
+	};
 }
 #endif

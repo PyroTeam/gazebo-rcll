@@ -23,5 +23,5 @@ include $(BUILDSYSDIR)/rules.mk
 # Explicit dependencies, this is needed to have make bail out if there is any
 # error. This is also necessary for working parallel build (i.e. for dual core)
 plugins: libs
-#tools: plugins
+	#tools: plugins
 

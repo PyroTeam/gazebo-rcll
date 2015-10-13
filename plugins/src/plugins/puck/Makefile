@@ -28,25 +28,25 @@ OBJS_gazebo_libpuck = puck.o
 OBJS_all    = $(OBJS_gazebo_libpuck)
 
 ifeq ($(HAVE_GAZEBO)$(HAVE_PROTOBUF)$(HAVE_CPP11),111)
-  CFLAGS  += $(CFLAGS_GAZEBO) $(CFLAGS_PROTOBUF) $(CFLAGS_CPP11)
-  LDFLAGS += $(LDFLAGS_GAZEBO) $(LDFLAGS_PROTOBUF) -lm $(call boost-libs-ldflags,system) -lboost_system
+	CFLAGS  += $(CFLAGS_GAZEBO) $(CFLAGS_PROTOBUF) $(CFLAGS_CPP11)
+	LDFLAGS += $(LDFLAGS_GAZEBO) $(LDFLAGS_PROTOBUF) -lm $(call boost-libs-ldflags,system) -lboost_system
 
-  LIBS_all = $(LIBDIR)/gazebo/libpuck.so
+LIBS_all = $(LIBDIR)/gazebo/libpuck.so
 else
-  ifneq ($(HAVE_GAZEBO),1)
-    WARN_TARGETS += warning_gazebo
-  endif
-  ifneq ($(HAVE_PROTOBUF),1)
-    WARN_TARGETS += warning_protobuf
-  endif
-  ifneq ($(HAVE_CPP11),1)
-    WARN_TARGETS += warning_cpp11
-  endif
+	ifneq ($(HAVE_GAZEBO),1)
+	WARN_TARGETS += warning_gazebo
+endif
+ifneq ($(HAVE_PROTOBUF),1)
+	WARN_TARGETS += warning_protobuf
+endif
+ifneq ($(HAVE_CPP11),1)
+	WARN_TARGETS += warning_cpp11
+endif
 endif
 
 ifeq ($(OBJSSUBMAKE),1)
-all: $(WARN_TARGETS)
-.PHONY: warning_gazebo warning_protobuf
+	all: $(WARN_TARGETS)
+	.PHONY: warning_gazebo warning_protobuf
 warning_gazebo:
 	$(SILENT)echo -e "$(INDENT_PRINT)--> $(TRED)Omitting gazebo-mps Plugin$(TNORMAL) " \
 		"(Gazebo Simulator not found)"
