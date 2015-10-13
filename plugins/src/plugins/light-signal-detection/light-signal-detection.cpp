@@ -29,9 +29,10 @@ using namespace gazebo;
 // Register this plugin to make it available in the simulator
 GZ_REGISTER_MODEL_PLUGIN(LightSignalDetection)
 
-	///Constructor
+///Constructor
 LightSignalDetection::LightSignalDetection()
 {
+	printf("Constructing LightSignalDetection Plugin!\n");
 }
 ///Destructor
 LightSignalDetection::~LightSignalDetection()

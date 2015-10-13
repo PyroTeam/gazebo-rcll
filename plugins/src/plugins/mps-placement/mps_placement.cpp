@@ -33,6 +33,7 @@ using namespace gazebo;
 ///Constructor
 MpsPlacementPlugin::MpsPlacementPlugin()
 {
+	printf("Constructing MpsPlacementPlugin Plugin!\n");
 }
 ///Destructor
 MpsPlacementPlugin::~MpsPlacementPlugin()

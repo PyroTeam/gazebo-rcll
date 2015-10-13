@@ -30,6 +30,8 @@ using namespace gazebo;
 
 LlsfRefboxCommPlugin::LlsfRefboxCommPlugin() : WorldPlugin()
 {
+	printf("Constructing the LlsfRefboxCommPlugin!\n");
+
 	//Init the communication Node
 	this->node_ = transport::NodePtr(new transport::Node());
 	this->node_->Init("LLSF");
@@ -47,6 +49,7 @@ LlsfRefboxCommPlugin::LlsfRefboxCommPlugin() : WorldPlugin()
 
 LlsfRefboxCommPlugin::~LlsfRefboxCommPlugin()
 {
+	printf("Destructing the LlsfRefboxCommPlugin!\n");
 }
 
 /** Initialization while loading the plugin

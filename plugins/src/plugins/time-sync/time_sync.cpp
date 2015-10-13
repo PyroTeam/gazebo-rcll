@@ -27,6 +27,8 @@ using namespace gazebo;
 
 TimesyncPlugin::TimesyncPlugin() : WorldPlugin()
 {
+	printf("Constructing TimeSync Plugin!\n");
+
 	//Init the communication Node
 	this->node_ = transport::NodePtr(new transport::Node());
 	this->node_->Init("LLSF");
@@ -42,6 +44,7 @@ TimesyncPlugin::TimesyncPlugin() : WorldPlugin()
 
 TimesyncPlugin::~TimesyncPlugin()
 {
+	printf("Destructing TimeSync Plugin!\n");
 }
 
 /** Initialization while loading the plugin

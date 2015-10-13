@@ -29,6 +29,7 @@ GZ_REGISTER_MODEL_PLUGIN(Motor)
 
 Motor::Motor()
 {
+	printf("Constructing Motor Plugin!\n");
 }
 
 Motor::~Motor()

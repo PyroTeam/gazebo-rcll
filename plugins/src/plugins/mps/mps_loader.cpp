@@ -33,7 +33,7 @@ GZ_REGISTER_MODEL_PLUGIN(MpsLoader)
 
 MpsLoader::MpsLoader()
 {
-
+	printf("Constructing Mps Plugin!\n");
 }
 
 MpsLoader::~MpsLoader()

@@ -32,6 +32,7 @@ GZ_REGISTER_MODEL_PLUGIN(Puck)
 	///Constructor
 Puck::Puck()
 {
+	printf("Constructing Puck Plugin!\n");
 }
 ///Destructor
 Puck::~Puck()

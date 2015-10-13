@@ -29,6 +29,7 @@ GZ_REGISTER_MODEL_PLUGIN(Gyro)
 
 Gyro::Gyro()
 {
+	printf("Constructing Gyro Plugin\n");
 }
 
 Gyro::~Gyro()
@@ -56,7 +57,6 @@ void Gyro::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 	this->node_ = transport::NodePtr(new transport::Node());
 	//the namespace is set to the model name!
 	this->node_->Init(model_->GetWorld()->GetName()+"/"+name_);
-
 
 	//create publisher
 	this->gyro_pub_ = this->node_->Advertise<msgs::Vector3d>("~/RobotinoSim/Gyro/");

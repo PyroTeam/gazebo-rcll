@@ -35,22 +35,22 @@ ifeq ($(HAVE_GAZEBO)$(HAVE_PROTOBUF),11)
 LIBS_all = $(LIBDIR)/gazebo/libgyro.so
 else
 	ifneq ($(HAVE_GAZEBO),1)
-	WARN_TARGETS += warning_gazebo
-endif
-ifneq ($(HAVE_PROTOBUF),1)
-	WARN_TARGETS += warning_protobuf
-endif
+		WARN_TARGETS += warning_gazebo
+	endif
+	ifneq ($(HAVE_PROTOBUF),1)
+		WARN_TARGETS += warning_protobuf
+	endif
 endif
 
 ifeq ($(OBJSSUBMAKE),1)
-	all: $(WARN_TARGETS)
-	.PHONY: warning_gazebo warning_protobuf
+all: $(WARN_TARGETS)
+.PHONY: warning_gazebo warning_protobuf
 warning_gazebo:
 	$(SILENT)echo -e "$(INDENT_PRINT)--> $(TRED)Omitting gazebo-gyro Plugin$(TNORMAL) " \
 		"(Gazebo Simulator not found)"
 warning_protobuf:
 	$(SILENT)echo -e "$(INDENT_PRINT)--> $(TRED)Omitting gazebo-gyro Plugin$(TNORMAL) " \
 		"(protobuf[-devel] not installed)"
-	endif
+endif
 
 include $(BUILDSYSDIR)/base.mk
