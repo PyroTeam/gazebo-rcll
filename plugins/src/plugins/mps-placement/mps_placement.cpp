@@ -192,6 +192,10 @@ void MpsPlacementPlugin::on_game_state_msg(ConstGameStatePtr &msg)
 		printf("MpsPlacementPlugin: Game started\n");
 		is_game_started_ = true;
 	}
+	else if(!is_game_started_)
+	{
+		printf("MpsPlacementPlugin: Game Not started\n");
+	}
 	// Not used because removing mps does not work at the moment
 	// if(is_game_started_ && msg->phase() == llsf_msgs::GameState::PRE_GAME){
 	//   printf("MpsPlacementPlugin: Game stopped\n");

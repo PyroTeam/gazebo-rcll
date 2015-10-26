@@ -32,10 +32,6 @@ LlsfRefboxCommPlugin::LlsfRefboxCommPlugin() : WorldPlugin()
 {
 	printf("Constructing the LlsfRefboxCommPlugin!\n");
 
-	//Init the communication Node
-	this->node_ = transport::NodePtr(new transport::Node());
-	this->node_->Init("LLSF");
-
 	//resolve path to proto dirs by using the environmental variable $GAZEBO_RCLL
 	const char * folder_path = ::getenv("GAZEBO_RCLL");
 	if ( folder_path == 0 ) {
@@ -59,6 +55,10 @@ LlsfRefboxCommPlugin::~LlsfRefboxCommPlugin()
 void LlsfRefboxCommPlugin::Load(physics::WorldPtr _world, sdf::ElementPtr _sdf)
 {
 	world_ = _world;
+
+	//Init the communication Node
+	this->node_ = transport::NodePtr(new transport::Node());
+	this->node_->Init(world_->GetName());
 
 	//create publisher and subscriber for connection with gazebo node
 	machine_info_pub_ = node_->Advertise<llsf_msgs::MachineInfo>(TOPIC_MACHINE_INFO);
@@ -137,7 +137,7 @@ LlsfRefboxCommPlugin::client_disconnected(const boost::system::error_code &error
 LlsfRefboxCommPlugin::client_msg(uint16_t comp_id, uint16_t msg_type,
 		std::shared_ptr<google::protobuf::Message> msg)
 {
-	//printf("LLSF-refbox-comm: Got Message from refbox: %s\n", msg->GetTypeName().c_str());
+	printf("LLSF-refbox-comm: Got Message from refbox: %s\n", msg->GetTypeName().c_str());
 
 	//Filter wanted messages
 	if(msg->GetTypeName() == "llsf_msgs.MachineInfo")
