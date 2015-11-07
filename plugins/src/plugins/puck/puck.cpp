@@ -34,25 +34,29 @@ Puck::Puck()
 {
 	printf("Constructing Puck Plugin!\n");
 }
+
 ///Destructor
 Puck::~Puck()
 {
 	printf("Destructing Puck Plugin for %s!\n",this->name().c_str());
 }
 
+
 inline std::string Puck::name()
 {
 	return model_->GetName();
 }
+
 
 /** on loading of the plugin
  * @param _parent Parent Model
  */
 void Puck::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 {
-	printf("Loading Puck Plugin of model %s\n", _parent->GetName().c_str());
 	// Store the pointer to the model
 	this->model_ = _parent;
+
+	printf("Loading Puck Plugin of model %s\n", model_->GetName().c_str());
 
 	// Listen to the update event. This event is broadcast every
 	// simulation iteration.
@@ -60,13 +64,13 @@ void Puck::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 
 	// Create the communication Node for communication with fawkes
 	this->node_ = transport::NodePtr(new transport::Node());
-	// the namespace is set to the world name!
+	// The namespace is set to the world name!
 	this->node_->Init(model_->GetWorld()->GetName());
 
-	// register visual publisher
+	// Register visual publisher
 	this->visual_pub_ = this->node_->Advertise<msgs::Visual>("~/visual");
 
-	// initialize without rings or cap
+	// Initialize without rings or cap
 	this->ring_count_ = 0;
 	this->have_cap = false;
 
@@ -79,16 +83,17 @@ void Puck::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 
 
 
-	// subscribe for puck commands
+	// Subscribe for puck commands
 	this->command_subscriber = this->node_->Subscribe(std::string("~/pucks/cmd"), &Puck::on_command_msg, this);
 
-	// publisher for workpiece command results
+	// Publisher for workpiece command results
 	this->workpiece_result_pub_ = node_->Advertise<gazsim_msgs::WorkpieceResult>("~/pucks/cmd/result");
 
 	base_color_ = gazsim_msgs::Color::RED;
 
 	delivery_pub_ = node_->Advertise<llsf_msgs::SetOrderDeliveredByColor>(TOPIC_SET_ORDER_DELIVERY_BY_COLOR);
 }
+
 
 /** Called by the world update start event
 */

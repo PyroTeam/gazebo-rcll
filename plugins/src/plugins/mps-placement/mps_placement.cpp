@@ -35,11 +35,13 @@ MpsPlacementPlugin::MpsPlacementPlugin()
 {
 	printf("Constructing MpsPlacementPlugin Plugin!\n");
 }
+
 ///Destructor
 MpsPlacementPlugin::~MpsPlacementPlugin()
 {
 	printf("Destructing MpsPlacementPlugin Plugin!\n");
 }
+
 
 /** on loading of the plugin
  * @param _parent Parent Model
@@ -53,10 +55,10 @@ void MpsPlacementPlugin::Load(physics::WorldPtr _world, sdf::ElementPtr /*_sdf*/
 
 	//Create the communication Node for communication with fawkes
 	this->node_ = transport::NodePtr(new transport::Node());
-	//the namespace is set to the world name!
+	// The namespace is set to the world name!
 	this->node_->Init(world_->GetName());
 
-	//subscribe for refbox msgs
+	// Subscribe for refbox msgs
 	machine_info_sub_ = node_->Subscribe(std::string(TOPIC_MACHINE_INFO), &MpsPlacementPlugin::on_machine_info_msg, this);
 	game_state_sub_ = node_->Subscribe(std::string(TOPIC_GAME_STATE), &MpsPlacementPlugin::on_game_state_msg, this);
 
@@ -68,12 +70,14 @@ void MpsPlacementPlugin::Load(physics::WorldPtr _world, sdf::ElementPtr /*_sdf*/
 	modelPub = node_->Advertise<msgs::Model>("~/model");
 }
 
+
 /** on Gazebo reset
 */
 void MpsPlacementPlugin::Reset()
 {
 	machines_placed_ = false;
 }
+
 
 /** Functions for recieving a machine info msg
  * @param msg message

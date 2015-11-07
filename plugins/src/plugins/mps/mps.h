@@ -77,9 +77,10 @@ namespace gazebo
 	class Mps
 	{
 		public:
-			Mps(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
-			virtual ~Mps();
+			Mps();
+			~Mps();
 
+			virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr);
 			virtual void OnUpdate(const common::UpdateInfo &);
 			virtual void Reset();
 

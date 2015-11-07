@@ -28,18 +28,6 @@ using namespace gazebo;
 TimesyncPlugin::TimesyncPlugin() : WorldPlugin()
 {
 	printf("Constructing TimeSync Plugin!\n");
-
-	//Init the communication Node
-	this->node_ = transport::NodePtr(new transport::Node());
-	this->node_->Init("LLSF");
-	time_sync_frequency_ = 4.0;
-
-	//create publisher
-	this->time_sync_pub_ = node_->Advertise<gazsim_msgs::SimTime>("~/gazsim/time-sync/");
-
-	//init variables
-	last_real_time_ = 0.0;
-	last_sim_time_ = 0.0;
 }
 
 TimesyncPlugin::~TimesyncPlugin()
@@ -55,7 +43,20 @@ void TimesyncPlugin::Load(physics::WorldPtr _world, sdf::ElementPtr _sdf)
 {
 	world_ = _world;
 
-	//connect update function
+	// Init the communication Node
+	this->node_ = transport::NodePtr(new transport::Node());
+	// The namespace is set to the world name!
+	this->node_->Init(world_->GetName());
+	time_sync_frequency_ = 4.0;
+
+	// Create publisher
+	this->time_sync_pub_ = node_->Advertise<gazsim_msgs::SimTime>("~/gazsim/time-sync/");
+
+	// Init variables
+	last_real_time_ = 0.0;
+	last_sim_time_ = 0.0;
+
+	// Connect update function
 	update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&TimesyncPlugin::Update, this));
 	printf("Timesync-Plugin loaded!\n");
 }

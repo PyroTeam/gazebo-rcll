@@ -34,6 +34,7 @@ LightSignalDetection::LightSignalDetection()
 {
 	printf("Constructing LightSignalDetection Plugin!\n");
 }
+
 ///Destructor
 LightSignalDetection::~LightSignalDetection()
 {
@@ -49,7 +50,7 @@ void LightSignalDetection::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sd
 	// Store the pointer to the model
 	this->model_ = _parent;
 
-	//get the model-name
+	// Get the model-name
 	this->name_ = model_->GetName();
 	printf("Loading LightSignalDetection Plugin of model %s\n", name_.c_str());
 
@@ -57,29 +58,29 @@ void LightSignalDetection::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sd
 	// simulation iteration.
 	this->update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&LightSignalDetection::OnUpdate, this, _1));
 
-	//Create the communication Node for communication with fawkes
+	// Create the communication Node for communication with fawkes
 	this->node_ = transport::NodePtr(new transport::Node());
-	//the namespace is set to the model name!
+	// The namespace is set to the model name!
 	this->node_->Init(model_->GetWorld()->GetName()+"/"+name_);
 
-	//Create the communication Node in gazbeo
+	// Create the communication Node in gazbeo
 	this->world_node_ = transport::NodePtr(new transport::Node());
-	//the namespace is set to the world name!
+	// The namespace is set to the world name!
 	this->world_node_->Init(model_->GetWorld()->GetName());
 
 
-	//init last sent time
+	// Init last sent time
 	last_sent_time_ = model_->GetWorld()->GetSimTime().Double();
 
-	//create publisher
+	// Create publisher
 	this->light_signal_pub_ = this->node_->Advertise<gazsim_msgs::LightSignalDetection>("~/gazsim/light-signal/");
 
-	//subscribe for light status msgs
+	// Subscribe for light status msgs
 	light_msg_sub_ = world_node_->Subscribe(std::string(TOPIC_MACHINE_INFO), &LightSignalDetection::on_light_msg, this);
 
 	robot_pose_ = model_->GetWorldPose();
 
-	//initial values:
+	// Initial values:
 	visible_ = false;
 	visibility_history_ = -1;
 	visible_since_ = 0;

@@ -27,15 +27,18 @@ using namespace gazebo;
 // Register this plugin to make it available in the simulator
 GZ_REGISTER_MODEL_PLUGIN(LightControl)
 
-	///Constructor
+///Constructor
 LightControl::LightControl()
 {
+	printf("Constructing LightControl Plugin!\n");
 }
+
 ///Destructor
 LightControl::~LightControl()
 {
 	printf("Destructing LightControl Plugin!\n");
 }
+
 
 /** on loading of the plugin
  * @param _parent Parent Model
@@ -45,11 +48,11 @@ void LightControl::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 	// Store the pointer to the model
 	this->model_ = _parent;
 
-	//get the model-name
+	// Get the model-name
 	this->name_ = model_->GetName();
 	printf("Loading LightControl Plugin of model %s\n", name_.c_str());
 
-	//get name of the machine containing the light signal
+	// Get name of the machine containing the light signal
 	physics::ModelPtr machine = model_->GetParentModel();
 	if(!machine)
 	{
@@ -64,21 +67,22 @@ void LightControl::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 	// simulation iteration.
 	this->update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&LightControl::OnUpdate, this, _1));
 
-	//Create the communication Node for communication
+	// Create the communication Node for communication
 	this->node_ = transport::NodePtr(new transport::Node());
-	//the namespace is set to the world name!
+	// The namespace is set to the world name!
 	this->node_->Init(model_->GetWorld()->GetName());
 
-	//Create publisher to set visual properties
+	// Create publisher to set visual properties
 	visPub_ = this->node_->Advertise<msgs::Visual>("~/visual",
 			/*number of lights*/ 3*12);
 
-	//subscribe for light status msgs
+	// Subscribe for light status msgs
 	light_msg_sub_ = node_->Subscribe(std::string(TOPIC_MACHINE_INFO), &LightControl::on_light_msg, this);
 
 	world_ = model_->GetWorld();
 	last_sent_time_ = world_->GetSimTime().Double();
 }
+
 
 /** Called by the world update start event
 */

@@ -37,6 +37,7 @@ Gyro::~Gyro()
 	printf("Destructing Gyro Plugin!\n");
 }
 
+
 /** on loading of the plugin
  * @param _parent Parent Model
  */
@@ -45,7 +46,7 @@ void Gyro::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 	// Store the pointer to the model
 	this->model_ = _parent;
 
-	//get the model-name
+	// Get the model-name
 	this->name_ = model_->GetName();
 	printf("Loading Gyro Plugin of model %s\n", name_.c_str());
 
@@ -53,18 +54,19 @@ void Gyro::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 	// simulation iteration.
 	this->update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&Gyro::OnUpdate, this, _1));
 
-	//Create the communication Node for communication with fawkes
+	// Create the communication Node for communication with fawkes
 	this->node_ = transport::NodePtr(new transport::Node());
-	//the namespace is set to the model name!
+	// The namespace is set to the model name!
 	this->node_->Init(model_->GetWorld()->GetName()+"/"+name_);
 
-	//create publisher
+	// Create publisher
 	this->gyro_pub_ = this->node_->Advertise<msgs::Vector3d>("~/RobotinoSim/Gyro/");
 
-	//init last sent time
+	// Init last sent time
 	last_sent_time_ = model_->GetWorld()->GetSimTime().Double();
 	this->send_interval_ = 0.05;
 }
+
 
 /** Called by the world update start event
 */

@@ -32,7 +32,7 @@ LlsfRefboxCommPlugin::LlsfRefboxCommPlugin() : WorldPlugin()
 {
 	printf("Constructing the LlsfRefboxCommPlugin!\n");
 
-	//resolve path to proto dirs by using the environmental variable $GAZEBO_RCLL
+	// Resolve path to proto dirs by using the environmental variable $GAZEBO_RCLL
 	const char * folder_path = ::getenv("GAZEBO_RCLL");
 	if ( folder_path == 0 ) {
 		printf("\n\n\nCan not find $GAZEBO_RCLL. Please set it in your .bashrc to the path to the gazebo-rcll folder.\n\n\n");
@@ -56,11 +56,14 @@ void LlsfRefboxCommPlugin::Load(physics::WorldPtr _world, sdf::ElementPtr _sdf)
 {
 	world_ = _world;
 
-	//Init the communication Node
+	printf("Loading RefboxComm Plugin of world %s\n", world_->GetName.c_str());
+
+	// Init the communication Node
 	this->node_ = transport::NodePtr(new transport::Node());
+	// The namespace is set to the world name!
 	this->node_->Init(world_->GetName());
 
-	//create publisher and subscriber for connection with gazebo node
+	// Create publisher and subscriber for connection with gazebo node
 	machine_info_pub_ = node_->Advertise<llsf_msgs::MachineInfo>(TOPIC_MACHINE_INFO);
 	game_state_pub_ = node_->Advertise<llsf_msgs::GameState>(TOPIC_GAME_STATE);
 	// puck_info_pub_ = node_->Advertise<llsf_msgs::PuckInfo>(config->get_string("/gazsim/topics/puck-info"));
@@ -74,19 +77,20 @@ void LlsfRefboxCommPlugin::Load(physics::WorldPtr _world, sdf::ElementPtr _sdf)
 	machine_add_base_sub_ = node_->Subscribe(TOPIC_MACHINE_ADD_BASE, &LlsfRefboxCommPlugin::on_machine_add_base_msg, this);
 	set_order_deliverd_by_color_sub_ = node_->Subscribe(TOPIC_SET_ORDER_DELIVERY_BY_COLOR, &LlsfRefboxCommPlugin::on_set_order_delvered_by_color_msg, this);
 
-	//connect update function
+	// Connect update function
 	update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&LlsfRefboxCommPlugin::Update, this));
 	printf("LLSF-refbox-connection-Plugin loaded!\n");
 
 	connected_ = false;
 	connect_tries_ = 0;
 	printf("Trying to connect to refbox\n");
-	//prepare client
+	// Prepare client
 	create_client();
 	client_->async_connect(REFBOX_HOST, REFBOX_PORT);
 
 	last_connect_try_ = world_->GetSimTime().Double();
 }
+
 
 void LlsfRefboxCommPlugin::Update()
 {

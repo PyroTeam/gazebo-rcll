@@ -45,7 +45,7 @@ void Motor::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 	// Store the pointer to the model
 	this->model_ = _parent;
 
-	//get the model-name
+	// Get the model-name
 	this->name_ = model_->GetName();
 	printf("Loading Motor Plugin of model %s\n", name_.c_str());
 
@@ -53,20 +53,21 @@ void Motor::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
 	// simulation iteration.
 	this->update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&Motor::OnUpdate, this, _1));
 
-	//Create the communication Node for communication with fawkes
+	// Create the communication Node for communication with fawkes
 	this->node_ = transport::NodePtr(new transport::Node());
-	//the namespace is set to the model name!
+	// The namespace is set to the model name!
 	this->node_->Init(model_->GetWorld()->GetName()+"/"+name_);
 
 
-	//initialize movement commands:
+	// Initialize movement commands:
 	vx_ = 0.0;
 	vy_ = 0.0;
 	vomega_ = 0.0;
 
-	//create subscriber
+	// Create subscriber
 	this->motor_move_sub_ = this->node_->Subscribe(std::string("~/RobotinoSim/MotorMove/"), &Motor::on_motor_move_msg, this);
 }
+
 
 /** Called by the world update start event
 */

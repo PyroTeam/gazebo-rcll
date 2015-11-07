@@ -32,12 +32,27 @@ using namespace gazebo;
 //GZ_REGISTER_MODEL_PLUGIN(Mps)
 
 ///Constructor
-Mps::Mps(physics::ModelPtr _parent, sdf::ElementPtr)
+Mps::Mps()
+{
+	printf("Constructing Mps Plugin\n");
+}
+
+///Destructor
+Mps::~Mps()
+{
+	printf("Destructing Mps Plugin for %s!\n",this->name_.c_str());
+}
+
+
+/** on loading of the plugin
+ * @param _parent Parent Model
+ */
+void MpsPlacementPlugin::Load(physics::ModelPtr _parent, sdf::ElementPtr)
 {
 	// Store the pointer to the model
 	this->model_ = _parent;
 
-	//get the model-name
+	// Get the model-name
 	this->name_ = model_->GetName();
 	printf("Loading Mps Plugin of model %s\n", name_.c_str());
 
@@ -45,20 +60,20 @@ Mps::Mps(physics::ModelPtr _parent, sdf::ElementPtr)
 	// simulation iteration.
 	this->update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&Mps::OnUpdate, this, _1));
 
-	//Create the communication Node for communication with fawkes
+	// Create the communication Node for communication with fawkes
 	this->node_ = transport::NodePtr(new transport::Node());
-	//the namespace is set to the world name!
+	// The namespace is set to the world name!
 	this->node_->Init(model_->GetWorld()->GetName());
 
 	created_time_ = model_->GetWorld()->GetSimTime().Double();
 	spawned_tags_last_ = model_->GetWorld()->GetSimTime().Double();
 
-	//subscribe to machine info
+	// Subscribe to machine info
 	this->machine_info_subscriber_ = this->node_->Subscribe(TOPIC_MACHINE_INFO, &Mps::on_machine_msg, this);
 
 	this->new_puck_subscriber_ = node_->Subscribe("~/new_puck",&Mps::on_new_puck,this);
 
-	//Create publisher to spawn tags
+	// Create publisher to spawn tags
 	visPub_ = this->node_->Advertise<msgs::Visual>("~/visual", /*number of lights*/ 3*12);
 	set_machne_state_pub_ = this->node_->Advertise<llsf_msgs::SetMachineState>(TOPIC_SET_MACHINE_STATE);
 
@@ -68,11 +83,7 @@ Mps::Mps(physics::ModelPtr _parent, sdf::ElementPtr)
 	puck_cmd_pub_ = node_->Advertise<gazsim_msgs::WorkpieceCommand>(TOPIC_PUCK_COMMAND);
 	joint_message_sub_ = node_->Subscribe(TOPIC_JOINT, &Mps::on_joint_msg, this);
 }
-///Destructor
-Mps::~Mps()
-{
-	printf("Destructing Mps Plugin for %s!\n",this->name_.c_str());
-}
+
 
 /** Called by the world update start event
 */
