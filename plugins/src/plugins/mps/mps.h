@@ -35,6 +35,9 @@
 #include <gazsim_msgs/NewPuck.pb.h>
 #include <map>
 
+/* Substitute printf with gazebo::common::console::logger */
+#include <printf_substitute/sub.h>
+
 //amount of pucks to listen for
 #define NUMBER_PUCKS 20
 //how far is the center of the belt hsifted from the machine center

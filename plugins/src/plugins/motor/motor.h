@@ -27,6 +27,9 @@
 #include <list>
 #include <string.h>
 
+/* Substitute printf with gazebo::common::console::logger */
+#include <printf_substitute/sub.h>
+
 namespace gazebo
 {
 	/** @class Motor

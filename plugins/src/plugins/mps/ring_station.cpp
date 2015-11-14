@@ -28,6 +28,12 @@ RingStation::RingStation() :
 	Mps()
 {
 	printf("Constructing RingStation \n");
+}
+
+void RingStation::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
+{
+	Mps::Load(_parent, _sdf);
+
 	add_base_publisher_ = node_->Advertise<llsf_msgs::MachineAddBase>(TOPIC_MACHINE_ADD_BASE);
 	number_bases_ = 0;
 }

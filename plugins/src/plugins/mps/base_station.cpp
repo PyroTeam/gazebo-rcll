@@ -28,6 +28,12 @@ BaseStation::BaseStation() :
 	Mps()
 {
 	printf("Constructing BaseStation \n");
+}
+
+void BaseStation::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
+{
+	Mps::Load(_parent, _sdf);
+
 	have_puck_ = "";
 }
 

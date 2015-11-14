@@ -29,6 +29,9 @@
 
 #include <boost/thread/mutex.hpp>
 
+/* Substitute printf with gazebo::common::console::logger */
+#include <printf_substitute/sub.h>
+
 namespace gazebo
 {
 	/**

@@ -32,6 +32,7 @@ namespace gazebo
 	{
 		public:
 			BaseStation();
+			void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
 
 		private:
 			void on_puck_msg(ConstPosePtr &msg);

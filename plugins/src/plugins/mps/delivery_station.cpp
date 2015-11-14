@@ -28,6 +28,12 @@ DeliveryStation::DeliveryStation() :
 	Mps()
 {
 	printf("Constructing DeliveryStation \n");
+}
+
+void DeliveryStation::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
+{
+	Mps::Load(_parent, _sdf);
+
 	selected_gate_ = 0;
 }
 

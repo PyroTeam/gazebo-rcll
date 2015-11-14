@@ -31,6 +31,9 @@
 #include <gazsim_msgs/SimTime.pb.h>
 #include <llsf_msgs/OrderInfo.pb.h>
 
+/* Substitute printf with gazebo::common::console::logger */
+#include <printf_substitute/sub.h>
+
 //typedefs for sending the messages over the gazebo node
 typedef const boost::shared_ptr<llsf_msgs::MachineInfo const> ConstMachineInfoPtr;
 typedef const boost::shared_ptr<gazsim_msgs::SimTime const> ConstSimTimePtr;

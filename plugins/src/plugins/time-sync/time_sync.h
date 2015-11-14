@@ -22,6 +22,9 @@
 #include <gazebo/gazebo.hh>
 #include <gazsim_msgs/SimTime.pb.h>
 
+/* Substitute printf with gazebo::common::console::logger */
+#include <printf_substitute/sub.h>
+
 
 namespace gazebo
 {

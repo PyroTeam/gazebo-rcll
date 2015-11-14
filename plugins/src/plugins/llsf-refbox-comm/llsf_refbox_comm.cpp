@@ -141,7 +141,7 @@ LlsfRefboxCommPlugin::client_disconnected(const boost::system::error_code &error
 LlsfRefboxCommPlugin::client_msg(uint16_t comp_id, uint16_t msg_type,
 		std::shared_ptr<google::protobuf::Message> msg)
 {
-	printf("LLSF-refbox-comm: Got Message from refbox: %s\n", msg->GetTypeName().c_str());
+	gzdbg << "Got Message from refbox: " << msg->GetTypeName().c_str() << std::endl;
 
 	//Filter wanted messages
 	if(msg->GetTypeName() == "llsf_msgs.MachineInfo")

@@ -29,6 +29,9 @@
 #include <gazsim_msgs/WorkpieceCommand.pb.h>
 #include <llsf_msgs/OrderInfo.pb.h>
 
+/* Substitute printf with gazebo::common::console::logger */
+#include <printf_substitute/sub.h>
+
 
 typedef const boost::shared_ptr<llsf_msgs::SetOrderDeliveredByColor const> ConstSetOrderDeliveredByColorPtr;
 typedef const boost::shared_ptr<gazsim_msgs::WorkpieceCommand const> ConstWorkpieceCommandPtr;

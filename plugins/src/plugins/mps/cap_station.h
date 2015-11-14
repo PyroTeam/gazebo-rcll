@@ -36,6 +36,7 @@ namespace gazebo {
 		public:
 			CapStation();
 
+			void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
 			void on_puck_msg(ConstPosePtr &msg);
 			void on_new_puck(ConstNewPuckPtr &msg);
 			void OnUpdate(const common::UpdateInfo &info);

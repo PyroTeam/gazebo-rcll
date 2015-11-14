@@ -28,6 +28,12 @@ CapStation::CapStation() :
 	Mps()
 {
 	printf("Constructing CapStation \n");
+}
+
+void CapStation::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
+{
+	Mps::Load(_parent, _sdf);
+
 	// spawn_puck(shelf_left_pose());
 	// spawn_puck(shelf_middle_pose());
 	spawn_puck(shelf_right_pose(),gazsim_msgs::Color::RED);

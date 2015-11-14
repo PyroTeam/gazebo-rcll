@@ -323,7 +323,6 @@ void Mps::spawn_puck(const math::Pose &spawn_pose, gazsim_msgs::Color base_color
 
 math::Pose Mps::get_puck_world_pose(double long_side, double short_side, double height)
 {
-	std::cout << "Mps::get_puck_world_pose this->model_ : " << this->model_ << std::endl;
 	double mps_x = this->model_->GetWorldPose().pos.x;
 	double mps_y = this->model_->GetWorldPose().pos.y;
 	double mps_ori = this->model_->GetWorldPose().rot.GetAsEuler().z;

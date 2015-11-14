@@ -169,8 +169,12 @@ void LightSignalDetection::on_light_msg(ConstMachineInfoPtr &msg)
 		}
 	}
 
+	/* Print colors found */
+	if (nearest_index != -1)
+		save_light_signal(msg->machines(nearest_index));
+	gzdbg << "Colors found (" << ((state_red_)?"Re":"-") << ", " << ((state_yellow_)?"Or":"-") << ", " << ((state_green_)?"Gr":"-") << ")" << std::endl;
+
 	// get machine message of nearest machine
-	printf("Colors : %d, %d, %d\n", state_red_, state_yellow_, state_green_);
 	if(min_dist < RADIUS_DETECTION_AREA){
 		//check if the signal changed
 		llsf_msgs::LightState old_red = state_red_;
