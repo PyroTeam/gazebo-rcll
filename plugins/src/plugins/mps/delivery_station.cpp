@@ -24,9 +24,10 @@
 
 using namespace gazebo;
 
-DeliveryStation::DeliveryStation(physics::ModelPtr _parent, sdf::ElementPtr  _sdf) :
-	Mps(_parent,_sdf)
+DeliveryStation::DeliveryStation() :
+	Mps()
 {
+	printf("Constructing DeliveryStation \n");
 	selected_gate_ = 0;
 }
 

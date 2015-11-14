@@ -56,7 +56,7 @@ void LlsfRefboxCommPlugin::Load(physics::WorldPtr _world, sdf::ElementPtr _sdf)
 {
 	world_ = _world;
 
-	printf("Loading RefboxComm Plugin of world %s\n", world_->GetName.c_str());
+	printf("Loading RefboxComm Plugin of world %s\n", world_->GetName().c_str());
 
 	// Init the communication Node
 	this->node_ = transport::NodePtr(new transport::Node());

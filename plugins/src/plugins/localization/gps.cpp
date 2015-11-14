@@ -27,10 +27,12 @@ using namespace gazebo;
 // Register this plugin to make it available in the simulator
 GZ_REGISTER_MODEL_PLUGIN(Gps)
 
-	///Constructor
+///Constructor
 Gps::Gps()
 {
+	printf("Constructing Gps Plugin!\n");
 }
+
 ///Destructor
 Gps::~Gps()
 {

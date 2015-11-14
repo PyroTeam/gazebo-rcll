@@ -24,9 +24,10 @@
 
 using namespace gazebo;
 
-BaseStation::BaseStation(physics::ModelPtr _parent, sdf::ElementPtr _sdf) :
-	Mps(_parent,_sdf)
+BaseStation::BaseStation() :
+	Mps()
 {
+	printf("Constructing BaseStation \n");
 	have_puck_ = "";
 }
 

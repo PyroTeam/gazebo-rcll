@@ -78,7 +78,7 @@ namespace gazebo
 	{
 		public:
 			Mps();
-			~Mps();
+			virtual ~Mps();
 
 			virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr);
 			virtual void OnUpdate(const common::UpdateInfo &);

@@ -24,9 +24,10 @@
 
 using namespace gazebo;
 
-CapStation::CapStation(physics::ModelPtr _parent, sdf::ElementPtr _sdf) :
-	Mps(_parent,_sdf)
+CapStation::CapStation() :
+	Mps()
 {
+	printf("Constructing CapStation \n");
 	// spawn_puck(shelf_left_pose());
 	// spawn_puck(shelf_middle_pose());
 	spawn_puck(shelf_right_pose(),gazsim_msgs::Color::RED);

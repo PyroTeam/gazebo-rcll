@@ -24,9 +24,10 @@
 
 using namespace gazebo;
 
-RingStation::RingStation(physics::ModelPtr _parent, sdf::ElementPtr  _sdf) :
-	Mps(_parent,_sdf)
+RingStation::RingStation() :
+	Mps()
 {
+	printf("Constructing RingStation \n");
 	add_base_publisher_ = node_->Advertise<llsf_msgs::MachineAddBase>(TOPIC_MACHINE_ADD_BASE);
 	number_bases_ = 0;
 }

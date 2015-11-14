@@ -33,13 +33,13 @@ GZ_REGISTER_MODEL_PLUGIN(MpsLoader)
 
 MpsLoader::MpsLoader()
 {
-	printf("Constructing Mps Plugin!\n");
+	printf("Constructing MpsLoader Plugin\n");
 }
 
 MpsLoader::~MpsLoader()
 {
 	delete mps_;
-	printf("Destructing Mps Plugin!\n");
+	printf("Destructing MpsLoader Plugin\n");
 }
 
 void MpsLoader::Load(physics::ModelPtr _parent, sdf::ElementPtr sdf)
@@ -49,26 +49,26 @@ void MpsLoader::Load(physics::ModelPtr _parent, sdf::ElementPtr sdf)
 	if(name.find("BS")!=std::string::npos)
 	{
 		printf("detected machine type: base \n");
-		mps_ = new BaseStation(_parent, sdf);
+		mps_ = new BaseStation();
 	}
 	else if(name.find("CS")!=std::string::npos)
 	{
 		printf("detected machine type: cap \n");
-		mps_= new CapStation(_parent, sdf);
+		mps_= new CapStation();
 	}
 	else if(name.find("RS")!=std::string::npos)
 	{
 		printf("detected machine type: ring \n");
-		mps_ = new RingStation(_parent, sdf);
+		mps_ = new RingStation();
 	}
 	else if(name.find("DS")!=std::string::npos)
 	{
 		printf("detected machine type: delivery \n");
-		mps_ = new DeliveryStation(_parent, sdf);
+		mps_ = new DeliveryStation();
 	}
 	else
 	{
-		printf("unknowen machine");
+		printf("unknown machine");
 	}
 }
 

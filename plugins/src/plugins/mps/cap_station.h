@@ -34,7 +34,7 @@ namespace gazebo {
 	class CapStation : public Mps
 	{
 		public:
-			CapStation(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
+			CapStation();
 
 			void on_puck_msg(ConstPosePtr &msg);
 			void on_new_puck(ConstNewPuckPtr &msg);
