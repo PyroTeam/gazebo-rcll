@@ -96,7 +96,7 @@ void LightSignalDetection::OnUpdate(const common::UpdateInfo & /*_info*/)
 	robot_pose_ = model_->GetWorldPose();
 	//send message to robot control software periodically:
 	double time = model_->GetWorld()->GetSimTime().Double();
-	if(true || time - last_sent_time_ > SEND_INTERVAL && visible_)
+	if(true || (time - last_sent_time_ > SEND_INTERVAL && visible_))
 	{
 		last_sent_time_ = time;
 		//set visibility history
