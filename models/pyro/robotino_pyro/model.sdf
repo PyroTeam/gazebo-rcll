@@ -1,89 +1,230 @@
 <?xml version="1.0" ?>
 <sdf version="1.4">
 
-  <model name="robotino_pyro">
+	<model name="robotino_pyro">
 
-    <include>
-      <uri>model://robotino3</uri>
-      <pose>0 0 0 0 0 1.5775</pose>
-    </include>
+		<include>
+			<uri>model://robotino3</uri>
+			<pose>0 0 0 0 0 1.5775</pose>
+		</include>
 
 <!--     <include>
-      <uri>model://robotino_gripper_adapter</uri>
-      <pose>0 -0.15 0.805 0 0 3.1415</pose>
-    </include>
+			<uri>model://robotino_gripper_adapter</uri>
+			<pose>0 -0.15 0.805 0 0 3.1415</pose>
+		</include>
 
-    <joint name="robotino_gripper_adapter_joint" type="revolute">
-      <parent>robotino3::body</parent>
-      <child>robotino_gripper_adapter::plate</child>
-      <axis>
-        <limit>
-          <lower>0</lower>
-          <upper>0</upper>
-        </limit>
-        <xyz>0 0 1</xyz>
-      </axis>
-    </joint>
+		<joint name="robotino_gripper_adapter_joint" type="revolute">
+			<parent>robotino3::body</parent>
+			<child>robotino_gripper_adapter::plate</child>
+			<axis>
+				<limit>
+					<lower>0</lower>
+					<upper>0</upper>
+				</limit>
+				<xyz>0 0 1</xyz>
+			</axis>
+		</joint>
 
-    <include>
-      <uri>model://robotino_gripper</uri>
-      <pose>0 -0.255 0.925 0 0 3.1415</pose>
-    </include>
+		<include>
+			<uri>model://robotino_gripper</uri>
+			<pose>0 -0.255 0.925 0 0 3.1415</pose>
+		</include>
 
-    <joint name="robotino_gripper_joint" type="revolute">
-      <parent>robotino_gripper_adapter::block</parent>
-      <child>robotino_gripper::body</child>
-      <axis>
-        <limit>
-          <lower>0</lower>
-          <upper>0</upper>
-        </limit>
-        <xyz>0 0 1</xyz>
-      </axis>
-    </joint>
-
-
-  <include>
-      <uri>model://hokuyo_noisy</uri>
-      <pose>0.0 -0.15 0.235 0 0 -1.570796</pose>
-    </include>
-
-    <joint name="hokuyo_joint" type="revolute">
-      <parent>robotino3::body</parent>
-      <child>hokuyo::laser_link</child>
-      <axis>
-        <xyz>0 0 1</xyz>
-        <limit>
-          <upper>0</upper>
-          <lower>0</lower>
-        </limit>
-      </axis>
-    </joint>
-
-    <plugin name="Odometry" filename="libodometry.so"/> -->
+		<joint name="robotino_gripper_joint" type="revolute">
+			<parent>robotino_gripper_adapter::block</parent>
+			<child>robotino_gripper::body</child>
+			<axis>
+				<limit>
+					<lower>0</lower>
+					<upper>0</upper>
+				</limit>
+				<xyz>0 0 1</xyz>
+			</axis>
+		</joint>
 
 
-  <!--plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-    <robotNamespace>/robotino_bbu1</robotNamespace>
-  </plugin-->
+	<include>
+			<uri>model://hokuyo_noisy</uri>
+			<pose>0.0 -0.15 0.235 0 0 -1.570796</pose>
+		</include>
 
-  <!-- Hokuyo Laser -->
-  <include>
-      <uri>model://hokuyo_w_plugin</uri>
-      <pose>0.1 0 0.235 0 0 0</pose>
-  </include>
+		<joint name="hokuyo_joint" type="revolute">
+			<parent>robotino3::body</parent>
+			<child>hokuyo::laser_link</child>
+			<axis>
+				<xyz>0 0 1</xyz>
+				<limit>
+					<upper>0</upper>
+					<lower>0</lower>
+				</limit>
+			</axis>
+		</joint>
 
-    <joint name="hokuyo_joint" type="revolute">
-      <parent>robotino3::body</parent>
-      <child>hokuyo::laser_link</child>
-      <axis>
-        <xyz>0 0 1</xyz>
-        <limit>
-          <upper>0</upper>
-          <lower>0</lower>
-        </limit>
-      </axis>
-    </joint>
+		<plugin name="Odometry" filename="libodometry.so"/> -->
 
-  </model>
+
+	<!--plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+		<robotNamespace>/robotino_bbu1</robotNamespace>
+	</plugin-->
+
+	<!-- Hokuyo Laser -->
+	<include>
+			<uri>model://hokuyo_w_plugin</uri>
+			<pose>0.1 0 0.235 0 0 0</pose>
+	</include>
+
+	<joint name="hokuyo_joint" type="revolute">
+		<parent>robotino3::body</parent>
+		<child>hokuyo::laser_link</child>
+		<axis>
+			<xyz>0 0 1</xyz>
+			<limit>
+				<upper>0</upper>
+				<lower>0</lower>
+			</limit>
+		</axis>
+	</joint>
+
+
+	<!-- tower camera (for ARTAG) -->
+	<!-- <model name="tower_camera"> -->
+		<link name="tower_camera_link">
+			<pose>0 0.2 0.6 0 0 0</pose>
+
+			<gravity>false</gravity>
+
+			<inertial>
+				<mass>0.02</mass>
+			</inertial>
+
+			<visual name="visual">
+				<pose>0 0 0 0 1.6 0</pose>
+				<geometry>
+					<cylinder>
+						<length>0.02</length>
+						<radius>0.03</radius>
+					</cylinder>
+				</geometry>
+				<cast_shadows>false</cast_shadows>
+				<material>
+					<ambient>0.0 0.0 0.0 0.1</ambient>
+					<diffuse>0.0 0.0 0.0 0.11</diffuse>
+				</material>
+			</visual>
+
+			<sensor type="camera" name="tower_camera">
+				<update_rate>30.0</update_rate>
+				<camera name="tower_camera">
+					<horizontal_fov>1.3962634</horizontal_fov>
+					<image>
+						<width>1200</width>
+						<height>700</height>
+						<format>R8G8B8</format>
+					</image>
+					<clip>
+						<near>0.02</near>
+						<far>300</far>
+					</clip>
+				</camera>
+				<plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+					<alwaysOn>true</alwaysOn>
+					<updateRate>0.0</updateRate>
+					<cameraName>/tower_camera</cameraName>
+					<imageTopicName>image_raw</imageTopicName>
+					<cameraInfoTopicName>camera_info</cameraInfoTopicName>
+					<frameName>tower_camera_link</frameName>
+					<hackBaseline>0.07</hackBaseline>
+					<distortionK1>0.0</distortionK1>
+					<distortionK2>0.0</distortionK2>
+					<distortionK3>0.0</distortionK3>
+					<distortionT1>0.0</distortionT1>
+					<distortionT2>0.0</distortionT2>
+				</plugin>
+			</sensor>
+		</link>
+	<!-- </model> -->
+
+	<joint name="tower_camera_joint" type="revolute">
+		<parent>robotino3::body</parent>
+		<child>tower_camera_link</child>
+		<axis>
+			<xyz>0 0 0.3</xyz>
+			<limit>
+				<upper>0</upper>
+				<lower>0</lower>
+			</limit>
+		</axis>
+	</joint>
+
+	<!-- platform camera (for light signals) -->
+	<!-- <model name="platform_camera"> -->
+		<link name="platform_camera_link">
+			<pose>0 0 0.9 0 0 0</pose>
+
+			<gravity>false</gravity>
+
+			<inertial>
+				<mass>0.02</mass>
+			</inertial>
+
+			<visual name="visual">
+				<pose>0 0 0 0 1.6 0</pose>
+				<geometry>
+					<cylinder>
+						<length>0.02</length>
+						<radius>0.03</radius>
+					</cylinder>
+				</geometry>
+				<cast_shadows>false</cast_shadows>
+				<material>
+					<ambient>0.0 0.0 0.0 0.1</ambient>
+					<diffuse>0.0 0.0 0.0 0.11</diffuse>
+				</material>
+			</visual>
+
+			<sensor type="camera" name="platform_camera">
+				<update_rate>30.0</update_rate>
+				<camera name="platform_camera">
+					<horizontal_fov>1.3962634</horizontal_fov>
+					<image>
+						<width>1200</width>
+						<height>700</height>
+						<format>R8G8B8</format>
+					</image>
+					<clip>
+						<near>0.02</near>
+						<far>300</far>
+					</clip>
+				</camera>
+				<plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+					<alwaysOn>true</alwaysOn>
+					<updateRate>0.0</updateRate>
+					<cameraName>/platform_camera</cameraName>
+					<imageTopicName>image_raw</imageTopicName>
+					<cameraInfoTopicName>camera_info</cameraInfoTopicName>
+					<frameName>platform_camera_link</frameName>
+					<hackBaseline>0.07</hackBaseline>
+					<distortionK1>0.0</distortionK1>
+					<distortionK2>0.0</distortionK2>
+					<distortionK3>0.0</distortionK3>
+					<distortionT1>0.0</distortionT1>
+					<distortionT2>0.0</distortionT2>
+				</plugin>
+			</sensor>
+		</link>
+	<!-- </model> -->
+
+	<joint name="platform_camera_joint" type="revolute">
+		<parent>robotino3::body</parent>
+		<child>platform_camera_link</child>
+		<axis>
+			<xyz>0 0 1</xyz>
+			<limit>
+				<upper>0</upper>
+				<lower>0</lower>
+			</limit>
+		</axis>
+	</joint>
+
+	</model>
 </sdf>
