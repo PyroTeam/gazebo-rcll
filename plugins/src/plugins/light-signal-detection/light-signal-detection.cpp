@@ -96,7 +96,8 @@ void LightSignalDetection::OnUpdate(const common::UpdateInfo & /*_info*/)
 	robot_pose_ = model_->GetWorldPose();
 	//send message to robot control software periodically:
 	double time = model_->GetWorld()->GetSimTime().Double();
-	if(true || (time - last_sent_time_ > SEND_INTERVAL && visible_))
+
+	if(true || ((time - last_sent_time_ > SEND_INTERVAL) && visible_))
 	{
 		last_sent_time_ = time;
 		//set visibility history
@@ -172,7 +173,7 @@ void LightSignalDetection::on_light_msg(ConstMachineInfoPtr &msg)
 	/* Print colors found */
 	if (nearest_index != -1)
 		save_light_signal(msg->machines(nearest_index));
-	gzdbg << "Colors found (" << ((state_red_)?"Re":"-") << ", " << ((state_yellow_)?"Or":"-") << ", " << ((state_green_)?"Gr":"-") << ")" << std::endl;
+	// gzdbg << "Colors found (" << ((state_red_)?"Re":"-") << ", " << ((state_yellow_)?"Or":"-") << ", " << ((state_green_)?"Gr":"-") << ")" << std::endl;
 
 	// get machine message of nearest machine
 	if(min_dist < RADIUS_DETECTION_AREA){

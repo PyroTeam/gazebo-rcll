@@ -42,6 +42,9 @@ namespace gazebo
 
 		private:
 			Mps *mps_;
+
+			/// Pointer to the update event connection
+			event::ConnectionPtr update_connection_;
 	};
 
 }

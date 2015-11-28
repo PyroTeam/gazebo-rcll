@@ -32,7 +32,8 @@ using namespace gazebo;
 //GZ_REGISTER_MODEL_PLUGIN(Mps)
 
 ///Constructor
-Mps::Mps()
+Mps::Mps():
+	model_(NULL)
 {
 	printf("Constructing Mps Plugin\n");
 }
@@ -98,6 +99,23 @@ void Mps::OnUpdate(const common::UpdateInfo & /*_info*/)
 	}
 }
 
+/** Called by the world update start event
+*/
+void Mps::OnUpdate()
+{
+	if (model_ == NULL)
+		return;
+
+	puts("Mps:OnUpdate ************");
+	if(model_->GetWorld()->GetSimTime().Double() - spawned_tags_last_ > TAG_SPAWN_TIME)
+	{
+		//Spawn tags (in Init is to early because it would be spawned at origin)
+		spawnTag("tag_input", name_ + "I" , 0, -0.176, 0);
+		spawnTag("tag_output", name_ + "O" , 0, 0.176, 3.14);
+		spawned_tags_last_ = model_->GetWorld()->GetSimTime().Double();
+	}
+}
+
 /** on Gazebo reset
 */
 void Mps::Reset()
@@ -144,6 +162,8 @@ void Mps::set_state(State state)
  */
 void Mps::spawnTag(std::string visual_name, std::string tag_name, float x, float y, float ori)
 {
+	std::cout << "Tag Name for " << name_ << " : " << tag_name << std::endl;
+
 	//create message to return
 	msgs::Visual msg;
 
