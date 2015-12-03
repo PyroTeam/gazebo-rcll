@@ -136,7 +136,7 @@
 					<cameraName>opposing1/hardware/camera/tower_camera</cameraName>
 					<imageTopicName>image_raw</imageTopicName>
 					<cameraInfoTopicName>camera_info</cameraInfoTopicName>
-					<frameName>tower_camera_link</frameName>
+					<frameName>opposing1/tower_camera_link</frameName>
 					<hackBaseline>0.07</hackBaseline>
 					<distortionK1>0.0</distortionK1>
 					<distortionK2>0.0</distortionK2>
@@ -206,7 +206,7 @@
 					<cameraName>opposing1/hardware/camera/platform_camera</cameraName>
 					<imageTopicName>image_raw</imageTopicName>
 					<cameraInfoTopicName>camera_info</cameraInfoTopicName>
-					<frameName>platform_camera_link</frameName>
+					<frameName>opposing1/platform_camera_link</frameName>
 					<hackBaseline>0.07</hackBaseline>
 					<distortionK1>0.0</distortionK1>
 					<distortionK2>0.0</distortionK2>
