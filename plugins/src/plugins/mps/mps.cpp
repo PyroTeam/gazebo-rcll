@@ -106,7 +106,6 @@ void Mps::OnUpdate()
 	if (model_ == NULL)
 		return;
 
-	puts("Mps:OnUpdate ************");
 	if(model_->GetWorld()->GetSimTime().Double() - spawned_tags_last_ > TAG_SPAWN_TIME)
 	{
 		//Spawn tags (in Init is to early because it would be spawned at origin)
