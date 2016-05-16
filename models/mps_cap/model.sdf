@@ -28,6 +28,26 @@
         <cast_shadows>false</cast_shadows>
       </visual>
 
+      <!-- For laser detection -->
+      <!-- On both ends of the mps are transparent walls a laser sensor can look through, in the middle are solid walls -->
+      <visual name="visual_box_wall_middle_1">
+        <pose>0.035 0 0.42 0 0 0 </pose>
+        <geometry>
+          <box>
+            <size>0.01 0.35 0.72</size>
+          </box>
+        </geometry>
+      </visual>
+      <visual name="visual_box_wall_middle_2">
+        <pose>-0.035 0 0.42 0 0 0 </pose>
+        <geometry>
+          <box>
+            <size>0.01 0.35 0.72</size>
+          </box>
+        </geometry>
+      </visual>
+
+
       <!-- Shelf: -->
       <collision name="collision_shelf">
         <pose>-0.175 0.105 0.895 0 0 0 </pose>

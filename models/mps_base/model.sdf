@@ -27,6 +27,26 @@
         </geometry>
         <cast_shadows>false</cast_shadows>
       </visual>
+
+      <!-- For laser detection -->
+      <!-- On both ends of the mps are transparent walls a laser sensor can look through, in the middle are solid walls -->
+      <visual name="visual_box_wall_middle_1">
+        <pose>0.035 0 0.42 0 0 0 </pose>
+        <geometry>
+          <box>
+            <size>0.01 0.35 0.72</size>
+          </box>
+        </geometry>
+      </visual>
+      <visual name="visual_box_wall_middle_2">
+        <pose>-0.035 0 0.42 0 0 0 </pose>
+        <geometry>
+          <box>
+            <size>0.01 0.35 0.72</size>
+          </box>
+        </geometry>
+      </visual>
+
       <!-- Collision Elements: -->
             <collision name="collision_conveyor_belt">
         <pose>0.025 0 0.88 0 0 0 </pose>
