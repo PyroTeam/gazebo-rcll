@@ -161,8 +161,6 @@ void Mps::set_state(State state)
  */
 void Mps::spawnTag(std::string visual_name, std::string tag_name, float x, float y, float ori)
 {
-	std::cout << "Tag Name for " << name_ << " : " << tag_name << std::endl;
-
 	//create message to return
 	msgs::Visual msg;
 
