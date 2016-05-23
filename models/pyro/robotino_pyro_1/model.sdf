@@ -93,7 +93,7 @@
 	<!-- tower camera (for ARTAG) -->
 	<!-- <model name="tower_camera"> -->
 		<link name="tower_camera_link">
-			<pose>0.2 0 0.6 0 0 0</pose>
+			<pose>0.2 0 0.53 0 0 0</pose>
 
 			<gravity>false</gravity>
 
