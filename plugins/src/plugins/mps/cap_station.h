@@ -25,44 +25,44 @@
 
 #include "mps.h"
 
-#define SPAWN_PUCK_TIME 20
+#define SPAWN_PUCK_TIME config->get_int("plugins/mps/cap-station/spawn_puck_time")
 
 typedef const boost::shared_ptr<const gazsim_msgs::WorkpieceResult> ConstWorkpieceResultPtr;
 
 namespace gazebo {
 
-	class CapStation : public Mps
-	{
-		public:
-			CapStation();
-
-			void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
-			void on_puck_msg(ConstPosePtr &msg);
-			void on_new_puck(ConstNewPuckPtr &msg);
-			void OnUpdate(const common::UpdateInfo &info);
-			void new_machine_info(ConstMachine &machine);
-			void on_puck_result(ConstWorkpieceResultPtr &result);
-
-			math::Pose shelf_left_pose();
-			math::Pose shelf_middle_pose();
-			math::Pose shelf_right_pose();
-
-			bool pose_in_shelf_left(const math::Pose &puck_pose);
-			bool pose_in_shelf_middle(const math::Pose &puck_pose);
-			bool pose_in_shelf_right(const math::Pose &puck_pose);
-
-			physics::ModelPtr puck_in_shelf_left_;
-			physics::ModelPtr puck_in_shelf_middle_;
-			physics::ModelPtr puck_in_shelf_right_;
-
-			llsf_msgs::CsOp task_;
-			gazsim_msgs::Color stored_cap_color_;
-			std::string puck_in_processing_name_;
-
-			transport::SubscriberPtr workpiece_result_subscriber_;
-
-			void work_puck(std::string puck_name);
-	};
+class CapStation : public Mps
+{
+public:
+  CapStation(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
+  
+  void on_puck_msg(ConstPosePtr &msg);
+  void on_new_puck(ConstNewPuckPtr &msg);
+  void OnUpdate(const common::UpdateInfo &info);
+  void new_machine_info(ConstMachine &machine);
+  void on_puck_result(ConstWorkpieceResultPtr &result);
+  
+  math::Pose shelf_left_pose();
+  math::Pose shelf_middle_pose();
+  math::Pose shelf_right_pose();
+  
+  bool pose_in_shelf_left(const math::Pose &puck_pose);
+  bool pose_in_shelf_middle(const math::Pose &puck_pose);
+  bool pose_in_shelf_right(const math::Pose &puck_pose);
+  
+  physics::ModelPtr puck_in_shelf_left_;
+  physics::ModelPtr puck_in_shelf_middle_;
+  physics::ModelPtr puck_in_shelf_right_;
+  
+  llsf_msgs::CsOp task_;
+  gazsim_msgs::Color stored_cap_color_;
+  std::string puck_in_processing_name_;
+  
+  transport::SubscriberPtr workpiece_result_subscriber_;
+  double puck_spawned_time_;
+  
+  void work_puck(std::string puck_name);
+};
 
 }
 

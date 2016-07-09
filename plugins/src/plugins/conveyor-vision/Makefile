@@ -23,13 +23,13 @@ include $(BUILDSYSDIR)/protobuf.mk
 GAZEBO_LIBDIR = $(LIBDIR)/gazebo
 LIBDIRS_BASE += $(GAZEBO_LIBDIR)
 
-LIBS_gazebo_libconveyor_vision = gazsim_msgs llsf_msgs
+LIBS_gazebo_libconveyor_vision = gazsim_msgs llsf_msgs configurable
 OBJS_gazebo_libconveyor_vision = conveyor_vision.o
 
 OBJS_all    = $(OBJS_gazebo_libconveyor_vision)
 
-ifeq ($(HAVE_GAZEBO)$(HAVE_PROTOBUF),11)
-  CFLAGS  += $(CFLAGS_GAZEBO) $(CFLAGS_PROTOBUF)
+ifeq ($(HAVE_GAZEBO)$(HAVE_PROTOBUF)$(HAVE_CPP11),111)
+  CFLAGS  += $(CFLAGS_CPP11) $(CFLAGS_GAZEBO) $(CFLAGS_PROTOBUF)
   LDFLAGS += $(LDFLAGS_GAZEBO) $(LDFLAGS_PROTOBUF) -lm $(call boost-libs-ldflags,system) -lboost_system
 
   LIBS_all = $(LIBDIR)/gazebo/libconveyor_vision.so
@@ -40,17 +40,22 @@ else
   ifneq ($(HAVE_PROTOBUF),1)
     WARN_TARGETS += warning_protobuf
   endif
+  ifneq ($(HAVE_CPP11),1)
+    WARN_TARGETS += warning_cpp11
+  endif
 endif
 
 ifeq ($(OBJSSUBMAKE),1)
 all: $(WARN_TARGETS)
-.PHONY: warning_gazebo warning_protobuf
+.PHONY: warning_gazebo warning_protobuf warning_cpp11
 warning_gazebo:
 	$(SILENT)echo -e "$(INDENT_PRINT)--> $(TRED)Omitting gazebo-conveyor-vision Plugin$(TNORMAL) " \
 		"(Gazebo Simulator not found)"
 warning_protobuf:
 	$(SILENT)echo -e "$(INDENT_PRINT)--> $(TRED)Omitting gazebo-conveyor-vision Plugin$(TNORMAL) " \
 		"(protobuf[-devel] not installed)"
+warning_cpp11:
+	$(SILENT)echo -e "$(INDENT_PRINT)--> $(TRED)Omitting gazebo-tag_vision Plugin$(TNORMAL) (C++11 support required)"
 endif
 
 include $(BUILDSYSDIR)/base.mk

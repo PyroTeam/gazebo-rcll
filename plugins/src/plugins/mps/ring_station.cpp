@@ -24,125 +24,122 @@
 
 using namespace gazebo;
 
-RingStation::RingStation() :
-	Mps()
+RingStation::RingStation(physics::ModelPtr _parent, sdf::ElementPtr  _sdf) :
+  Mps(_parent,_sdf)
 {
-	printf("Constructing RingStation \n");
-}
-
-void RingStation::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
-{
-	Mps::Load(_parent, _sdf);
-
-	add_base_publisher_ = node_->Advertise<llsf_msgs::MachineAddBase>(TOPIC_MACHINE_ADD_BASE);
-	number_bases_ = 0;
+  add_base_publisher_ = node_->Advertise<llsf_msgs::MachineAddBase>(TOPIC_MACHINE_ADD_BASE);
+  number_bases_ = 0;
 }
 
 void RingStation::on_puck_msg(ConstPosePtr &msg)
 {
-	if(pose_hit(math::Pose(msg->position().x(), msg->position().y(), msg->position().z(), 0,0,0), add_base_pose(),0.1) &&
-			!is_puck_hold(msg->name()))
-	{
-		add_base();
-		world_->GetEntity(msg->name())->SetWorldPose(get_puck_world_pose(-0.2,-0.5));
-	}
-	//check if the puck is in the input area
-	if(puck_in_input(msg) &&
-			puck_in_processing_name_ == "" &&
-			!is_puck_hold(msg->name()))
-	{
-		set_state(State::AVAILABLE);
-		puck_in_processing_name_ = msg->name();
-		printf("%s got %s\n", name_.c_str(), puck_in_processing_name_.c_str());
-	}
-	if(current_state_ == "READY-AT-OUTPUT" &&
-			msg->name() == puck_in_processing_name_ &&
-			!puck_in_output(msg))
-	{
-		set_state(State::RETRIEVED);
-		puck_in_processing_name_ = "";
-	}
+  if(pose_hit(math::Pose(msg->position().x(), msg->position().y(), msg->position().z(), 0,0,0), add_base_pose(),0.1) &&
+     !is_puck_hold(msg->name()))
+  {
+    add_base();
+    world_->GetEntity(msg->name())->SetWorldPose(get_puck_world_pose(-0.2,-0.5));
+  }
+  //check if the puck is in the input area
+  if(puck_in_input(msg) &&
+     puck_in_processing_name_ == "" &&
+     !is_puck_hold(msg->name()))
+  {
+    set_state(State::AVAILABLE);
+    puck_in_processing_name_ = msg->name();
+    printf("%s got %s\n", name_.c_str(), puck_in_processing_name_.c_str());
+  }
+  if(current_state_ == "READY-AT-OUTPUT" &&
+     msg->name() == puck_in_processing_name_ &&
+     !puck_in_output(msg))
+  {
+    set_state(State::RETRIEVED);
+    puck_in_processing_name_ = "";
+  }
 }
 
 void RingStation::publish_indicator(bool active, int number)
 {
-	gazebo::msgs::Visual msg;
-	msg.set_parent_name(name_+"::body");
-	msg.set_name(name_+"::body::base_" + std::to_string(number));
-	gazebo::msgs::Set(msg.mutable_pose(), gazebo::math::Pose(-0.35 + (number*0.11),0,BELT_HEIGHT+0.3,0,0,0));
-	if(active)
-	{
-		msgs::Set(msg.mutable_material()->mutable_diffuse(), gazebo::common::Color(1,0,0));
-	}
-	else
-	{
-		msgs::Set(msg.mutable_material()->mutable_diffuse(), gazebo::common::Color(0.3,0,0));
-	}
-	visPub_->Publish(msg);
+  gazebo::msgs::Visual msg;
+  msg.set_parent_name(name_+"::body");
+  msg.set_name(name_+"::body::base_" + std::to_string(number));
+#if GAZEBO_MAJOR_VERSION > 5
+  gazebo::msgs::Set(msg.mutable_pose(), ignition::math::Pose3d(-0.35 + (number*0.11),0,BELT_HEIGHT+0.3,0,0,0));
+#else
+  gazebo::msgs::Set(msg.mutable_pose(), gazebo::math::Pose(-0.35 + (number*0.11),0,BELT_HEIGHT+0.3,0,0,0));
+#endif
+  if(active)
+  {
+    msgs::Set(msg.mutable_material()->mutable_diffuse(), gazebo::common::Color(1,0,0));
+  }
+  else
+  {
+    msgs::Set(msg.mutable_material()->mutable_diffuse(), gazebo::common::Color(0.3,0,0));
+  }
+  visPub_->Publish(msg);
 }
 
 void RingStation::new_machine_info(ConstMachine &machine)
 {
-	if(machine.state() == "PREPARED")
-	{
-		switch(machine.instruction_rs().ring_color())
-		{
-			case llsf_msgs::RingColor::RING_BLUE:
-				color_to_put_ = gazsim_msgs::Color::BLUE;
-				break;
-			case llsf_msgs::RingColor::RING_GREEN:
-				color_to_put_ = gazsim_msgs::Color::GREEN;
-				break;
-			case llsf_msgs::RingColor::RING_ORANGE:
-				color_to_put_ = gazsim_msgs::Color::ORANGE;
-				break;
-			case llsf_msgs::RingColor::RING_YELLOW:
-				color_to_put_ = gazsim_msgs::Color::YELLOW;
-				break;
-		}
-		printf("%s is prepared to put %s on a workpiece\n", name_.c_str(), gazsim_msgs::Color_Name(color_to_put_).c_str());
-	}
-	else if(machine.state() == "PROCESSED")
-	{
-		printf("%s is putting a %s ring onto %s\n", name_.c_str(), gazsim_msgs::Color_Name(color_to_put_).c_str(), puck_in_processing_name_.c_str());
-		//teleport puck to output
-		model_->GetWorld()->GetEntity(puck_in_processing_name_)->SetWorldPose(math::Pose(output_x(), output_y(), BELT_HEIGHT, 0, 0, 0));
-		//spawn a ring ontop of the puck
-		//write to the puck plugin
-		if(!puck_cmd_pub_->HasConnections())
-		{
-			printf("cannot connect to puck %s on topic %s\n",puck_in_processing_name_.c_str(),TOPIC_PUCK_COMMAND);
-		}
-		else
-		{
-			//TODO: dont'spawn a fixed color, get color from better source
-			gazsim_msgs::WorkpieceCommand cmd;
-			cmd.set_command(gazsim_msgs::Command::ADD_RING);
-			cmd.set_color(color_to_put_);
-			cmd.set_puck_name(puck_in_processing_name_);
-			puck_cmd_pub_->Publish(cmd);
-		}
-		set_state(State::DELIVERED);
-	}
-
-	// show number of bases
-	number_bases_ = machine.loaded_with();
-	for(u_int32_t i=0; i < MAX_NUM_BASES; i++)
-	{
-		publish_indicator(i < machine.loaded_with(), i);
-	}
+  if(machine.state() == "PREPARED")
+  {
+    switch(machine.instruction_rs().ring_color())
+    {
+      case llsf_msgs::RingColor::RING_BLUE:
+        color_to_put_ = gazsim_msgs::Color::BLUE;
+        break;
+      case llsf_msgs::RingColor::RING_GREEN:
+        color_to_put_ = gazsim_msgs::Color::GREEN;
+        break;
+      case llsf_msgs::RingColor::RING_ORANGE:
+        color_to_put_ = gazsim_msgs::Color::ORANGE;
+        break;
+      case llsf_msgs::RingColor::RING_YELLOW:
+        color_to_put_ = gazsim_msgs::Color::YELLOW;
+        break;
+    }
+    printf("%s is prepared to put %s on a workpiece\n", name_.c_str(), gazsim_msgs::Color_Name(color_to_put_).c_str());
+  }
+  else if(machine.state() == "PROCESSED")
+  {
+    printf("%s is putting a %s ring onto %s\n", name_.c_str(), gazsim_msgs::Color_Name(color_to_put_).c_str(), puck_in_processing_name_.c_str());
+    //teleport puck to output
+    model_->GetWorld()->GetEntity(puck_in_processing_name_)->SetWorldPose(math::Pose(output_x(), output_y(), BELT_HEIGHT, 0, 0, 0));
+    //spawn a ring ontop of the puck
+    //write to the puck plugin
+    if(!puck_cmd_pub_->HasConnections())
+    {
+      printf("cannot connect to puck %s on topic %s\n",puck_in_processing_name_.c_str(),topic_puck_command_.c_str());
+    }
+    else
+    {
+      //TODO: dont'spawn a fixed color, get color from better source
+      gazsim_msgs::WorkpieceCommand cmd;
+      cmd.set_command(gazsim_msgs::Command::ADD_RING);
+      cmd.set_color(color_to_put_);
+      cmd.set_puck_name(puck_in_processing_name_);
+      puck_cmd_pub_->Publish(cmd);
+    }
+    set_state(State::DELIVERED);
+  }
+  
+  // show number of bases
+  number_bases_ = machine.loaded_with();
+  for(u_int32_t i=0; i < (u_int32_t) MAX_NUM_BASES; i++)
+  {
+    publish_indicator(i < machine.loaded_with(), i);
+  }
 }
 
 void RingStation::add_base()
 {
-	printf("Adding Base to %s\n", name_.c_str());
-	llsf_msgs::MachineAddBase add_base_msg;
-	add_base_msg.set_machine_name(name_);
-	add_base_publisher_->Publish(add_base_msg);
-	publish_indicator(true, number_bases_++);
+  printf("Adding Base to %s\n", name_.c_str());
+  llsf_msgs::MachineAddBase add_base_msg;
+  add_base_msg.set_machine_name(name_);
+  add_base_publisher_->Publish(add_base_msg);
+  publish_indicator(true, number_bases_++);
 }
 
 math::Pose RingStation::add_base_pose()
 {
-	return get_puck_world_pose(-0.25,0);
+  return get_puck_world_pose(-0.25,0);
 }

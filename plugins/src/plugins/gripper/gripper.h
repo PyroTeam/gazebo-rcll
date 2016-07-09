@@ -29,70 +29,79 @@
 #include <fnmatch.h>
 
 #include <boost/thread/mutex.hpp>
+#include <configurable/configurable.h>
 
 
 //config values
-#define TOPIC_SET_GRIPPER "~/RobotinoSim/SetGripper/"
-#define TOPIC_HOLDS_PUCK "~/RobotinoSim/GripperHasPuck/"
-#define TOPIC_JOINT "/GripperJoints/Holding"
-#define RADIUS_GRAB_AREA 0.05
+#define TOPIC_SET_GRIPPER config->get_string("plugins/gripper/topic-set-gripper").c_str()
+#define TOPIC_HOLDS_PUCK config->get_string("plugins/gripper/topic-holds-puck").c_str()
+#define TOPIC_JOINT config->get_string("plugins/gripper/topic-joint").c_str()
+#define RADIUS_GRAB_AREA config->get_float("plugins/gripper/radius-grab-area")
 
+
+enum ActionOnUpdate{
+  NOTHING = 0,
+  OPEN = 1,
+  CLOSE = 2
+} typedef ActionOnUpdate;
 
 namespace gazebo
 {
-	/**
-	 * Provides gripper simulation
-	 * @author Stefan Profanter
-	 */
-	class Gripper : public ModelPlugin
-	{
-		public:
-			Gripper();
-			~Gripper();
+    /**
+    * Provides gripper simulation
+    * @author Stefan Profanter
+    */
+  class Gripper : public ModelPlugin, public gazebo_rcll::ConfigurableAspect
+    {
+    public:
+        Gripper();
+        ~Gripper();
 
-			//Overridden ModelPlugin-Functions
-			virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
-			virtual void OnUpdate(const common::UpdateInfo &);
-			virtual void Reset();
+        //Overridden ModelPlugin-Functions
+        virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
+        virtual void OnUpdate(const common::UpdateInfo &);
+        virtual void Reset();
 
-		private:
-			/// Pointer to the gazbeo model
-			physics::ModelPtr model_;
-			physics::ModelPtr robotino_;
-			physics::LinkPtr robotino_link_;
-			/// Pointer to the update event connection
-			event::ConnectionPtr update_connection_;
-			///Node for communication to fawkes
-			transport::NodePtr node_;
-			///name of the gps and the communication channel
-			std::string name_;
+    private:
+        /// Pointer to the gazbeo model
+        physics::ModelPtr model_;
+        physics::ModelPtr robotino_;
+        physics::LinkPtr robotino_link_;
+        /// Pointer to the update event connection
+        event::ConnectionPtr update_connection_;
+        ///Node for communication to fawkes
+        transport::NodePtr node_;
+        ///name of the gps and the communication channel
+        std::string name_;
 
-			physics::ModelPtr grippedPuck;
+        physics::ModelPtr grippedPuck;
 
-			//Gripper Stuff:
+        //Gripper Stuff:
 
-			///Set gripper callback
-			void on_set_gripper_msg(ConstIntPtr &msg);
+        ///Set gripper callback
+        void on_set_gripper_msg(ConstIntPtr &msg);
 
-			///Suscriber for SetGripper
-			transport::SubscriberPtr set_gripper_sub_;
-			/// Publisher for has_puck
-			gazebo::transport::PublisherPtr has_puck_pub_;
+        ///Suscriber for SetGripper
+        transport::SubscriberPtr set_gripper_sub_;
+        /// Publisher for has_puck
+        gazebo::transport::PublisherPtr has_puck_pub_;
 
-			/// Publisher to announce which puck is hold by the gripper
-			gazebo::transport::PublisherPtr joint_pub_;
+        /// Publisher to announce which puck is hold by the gripper
+        gazebo::transport::PublisherPtr joint_pub_;
 
-			gazebo::physics::JointPtr grabJoint;
+        gazebo::physics::JointPtr grabJoint;
 
-			static gazebo::physics::LinkPtr getLinkEndingWith(physics::ModelPtr model, std::string link);
-			static gazebo::physics::JointPtr getJointEndingWith(physics::ModelPtr model, std::string link);
+        static gazebo::physics::LinkPtr getLinkEndingWith(physics::ModelPtr model, std::string link);
+        static gazebo::physics::JointPtr getJointEndingWith(physics::ModelPtr model, std::string link);
 
-			void close();
-			void open();
+        void close();
+        void open();
 
-			void setPuckPose();
-			void sendHasPuck(bool has_puck);
+        void setPuckPose();
+        void sendHasPuck(bool has_puck);
 
-			gazebo::physics::ModelPtr getNearestPuck();
-	};
+        gazebo::physics::ModelPtr getNearestPuck();
+
+    ActionOnUpdate last_action_rcvd_;
+    };
 }

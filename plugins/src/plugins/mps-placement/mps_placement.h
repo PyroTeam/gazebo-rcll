@@ -29,70 +29,67 @@
 #include <gazsim_msgs/WorkpieceCommand.pb.h>
 #include <llsf_msgs/MachineInfo.pb.h>
 #include <llsf_msgs/GameState.pb.h>
-
-/* Substitute printf with gazebo::common::console::logger */
-#include <printf_substitute/sub.h>
+#include <configurable/configurable.h>
 
 //typedefs for sending the messages over the gazebo node
 typedef const boost::shared_ptr<llsf_msgs::MachineInfo const> ConstMachineInfoPtr;
 typedef const boost::shared_ptr<llsf_msgs::GameState const> ConstGameStatePtr;
 
 //config values
-#define TOPIC_MACHINE_INFO "~/LLSFRbSim/MachineInfo/"
-#define TOPIC_GAME_STATE "~/LLSFRbSim/GameState/"
-// #define WAIT_TIME_BEFORE_PLACEMENT 15
-#define WAIT_TIME_BEFORE_PLACEMENT 3
-#define ZONE_HEIGHT 1.5
-#define ZONE_WIDTH 2.0
+#define TOPIC_MACHINE_INFO config->get_string("plugins/mps-placement/topic_machine_info").c_str()
+#define TOPIC_GAME_STATE config->get_string("plugins/mps-placement/topic_game_state").c_str()
+#define WAIT_TIME_BEFORE_PLACEMENT config->get_int("plugins/mps-placement/wait_time_before_placement")
+#define ZONE_HEIGHT config->get_float("plugins/mps-placement/zone_height")
+#define ZONE_WIDTH config->get_float("plugins/mps-placement/zone_width")
 
 
 namespace gazebo
 {
-	/**
-	 * Plugin to place the MPSs as specified by the refbox
-	 * @author Frederik Zwilling
-	 */
-	class MpsPlacementPlugin : public WorldPlugin
-	{
-		public:
-			MpsPlacementPlugin();
-			~MpsPlacementPlugin();
+  /**
+   * Plugin to place the MPSs as specified by the refbox
+   * @author Frederik Zwilling
+   */
+  class MpsPlacementPlugin : public WorldPlugin, public gazebo_rcll::ConfigurableAspect
+  {
+  public:
+    MpsPlacementPlugin();
+   ~MpsPlacementPlugin();
 
-			//Overridden ModelPlugin-Functions
-			virtual void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf);
-			virtual void Reset();
+    //Overridden ModelPlugin-Functions
+    virtual void Load(physics::WorldPtr _world, sdf::ElementPtr _sdf);
+    virtual void Reset();
 
-		private:
-			/// Pointer to the gazbeo world
-			physics::WorldPtr world_;
-			///Node for communication
-			transport::NodePtr node_;
+  private:
+    /// Pointer to the gazbeo world
+    physics::WorldPtr world_;
+    ///Node for communication
+    transport::NodePtr node_;
 
-			// MpsPlacementPlugin Stuff:
+    // MpsPlacementPlugin Stuff:
+    
+    /// Subscriber to get Machine Info from refbox
+    transport::SubscriberPtr machine_info_sub_;
+    
+    /// Subscriber to get Game state msgs
+    transport::SubscriberPtr game_state_sub_;
 
-			/// Subscriber to get Machine Info from refbox
-			transport::SubscriberPtr machine_info_sub_;
+    /// Spawn machine at a position
+    void spawn_mps(const math::Pose &spawn_pose, std::string model_name);
 
-			/// Subscriber to get Game state msgs
-			transport::SubscriberPtr game_state_sub_;
+    ///Remove existing MPS (e.g. before spawning them at other location)
+    void remove_existing_mps();
 
-			/// Spawn machine at a position
-			void spawn_mps(const math::Pose &spawn_pose, std::string model_name);
+    /// Handler for getting refbox msgs
+    void on_machine_info_msg(ConstMachineInfoPtr &msg);
+    void on_game_state_msg(ConstGameStatePtr &msg);
+    
+    bool machines_placed_;
+    bool is_game_started_;
+    int random_seed_base_;
 
-			///Remove existing MPS (e.g. before spawning them at other location)
-			void remove_existing_mps();
-
-			/// Handler for getting refbox msgs
-			void on_machine_info_msg(ConstMachineInfoPtr &msg);
-			void on_game_state_msg(ConstGameStatePtr &msg);
-
-			bool machines_placed_;
-			bool is_game_started_;
-			int random_seed_base_;
-
-			// Create a publisher on the ~/factory topic to spawn models
-			transport::PublisherPtr factoryPub;
-			transport::PublisherPtr modelPub;
-	};
-	GZ_REGISTER_WORLD_PLUGIN(MpsPlacementPlugin)
+    // Create a publisher on the ~/factory topic to spawn models
+    transport::PublisherPtr factoryPub;
+    transport::PublisherPtr modelPub;
+  };
+  GZ_REGISTER_WORLD_PLUGIN(MpsPlacementPlugin)
 }

@@ -28,85 +28,85 @@
 #include <string.h>
 #include <gazsim_msgs/WorkpieceCommand.pb.h>
 #include <llsf_msgs/OrderInfo.pb.h>
-
-/* Substitute printf with gazebo::common::console::logger */
-#include <printf_substitute/sub.h>
+#include <configurable/configurable.h>
 
 
 typedef const boost::shared_ptr<llsf_msgs::SetOrderDeliveredByColor const> ConstSetOrderDeliveredByColorPtr;
 typedef const boost::shared_ptr<gazsim_msgs::WorkpieceCommand const> ConstWorkpieceCommandPtr;
 /// The height of one ring
-#define RING_HEIGHT 0.008 //meter
+#define RING_HEIGHT config->get_float("plugins/puck/ring_height")
 /// The height of one cap
-#define CAP_HEIGHT 0.004 //meter
+#define CAP_HEIGHT config->get_float("plugins/puck/cap_height")
 /// The height of the workpiece base
-#define WORKPIECE_HEIGHT 0.0225 //meter
-#define TOPIC_SET_ORDER_DELIVERY_BY_COLOR "~/LLSFRbSim/DELIVERY"
+#define WORKPIECE_HEIGHT config->get_float("plugins/puck/workpiece_height")
+#define TOPIC_SET_ORDER_DELIVERY_BY_COLOR config->get_string("plugins/puck/topic_set_order_delivery_by_color").c_str()
 
 namespace gazebo
 {
-	/**
-	 * Plugin to control a simulated Puck
-	 * @author Randolph Maaßen
-	 */
-	class Puck : public ModelPlugin
-	{
-		public:
-			Puck();
-			~Puck();
+  /**
+   * Plugin to control a simulated Puck
+   * @author Randolph Maaßen
+   */
+  class Puck : public ModelPlugin, public gazebo_rcll::ConfigurableAspect
+  {
+  public:
+    Puck();
+   ~Puck();
 
-			//Overridden ModelPlugin-Functions
-			virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
-			virtual void OnUpdate(const common::UpdateInfo &);
-			virtual void Reset();
+    //Overridden ModelPlugin-Functions
+    virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/);
+    virtual void OnUpdate(const common::UpdateInfo &);
+    virtual void Reset();
 
-		private:
-			/// Pointer to the gazbeo model
-			physics::ModelPtr model_;
-			/// Pointer to the update event connection
-			event::ConnectionPtr update_connection_;
-			///Node for communication
-			transport::NodePtr node_;
-			///name of the puck and the communication channel
-			inline std::string name();
+  private:
+    /// Pointer to the gazbeo model
+    physics::ModelPtr model_;
+    /// Pointer to the update event connection
+    event::ConnectionPtr update_connection_;
+    ///Node for communication
+    transport::NodePtr node_;
+    ///name of the puck and the communication channel
+    inline std::string name();
+    /// Flag whether model has bene announced, yet.
+    bool announced_;
 
-			// Puck Stuff:
+    // Puck Stuff:
+    
+    /// Subscriber to get commands for model ring addition
+    transport::SubscriberPtr command_subscriber;
+    
+    transport::PublisherPtr new_puck_publisher;
 
-			/// Subscriber to get commands for model ring addition
-			transport::SubscriberPtr command_subscriber;
+    /// Handler for command messages
+    void on_command_msg(ConstWorkpieceCommandPtr &cmd);
+    /// Add one ring on command
+    void add_ring(gazsim_msgs::Color clr);
+    /// Add a cap on command
+    void add_cap(gazsim_msgs::Color clr);
+    void remove_cap();
 
-			transport::PublisherPtr new_puck_publisher;
+    /// The number of stored rings
+    size_t ring_count_;
 
-			/// Handler for command messages
-			void on_command_msg(ConstWorkpieceCommandPtr &cmd);
-			/// Add one ring on command
-			void add_ring(gazsim_msgs::Color clr);
-			/// Add a cap on command
-			void add_cap(gazsim_msgs::Color clr);
-			void remove_cap();
+    /// Check, if we have a cap on top
+    bool have_cap;
+    gazsim_msgs::Color cap_color_;
 
-			/// The number of stored rings
-			size_t ring_count_;
+    /// The color of the base
+    gazsim_msgs::Color base_color_;
 
-			/// Check, if we have a cap on top
-			bool have_cap;
-			gazsim_msgs::Color cap_color_;
+    /// The ring colors
+    std::vector<gazsim_msgs::Color> ring_colors_;
 
-			/// The color of the base
-			gazsim_msgs::Color base_color_;
-
-			/// The ring colors
-			std::vector<gazsim_msgs::Color> ring_colors_;
-
-			/// Publisher to send visual changes to gazebo
-			transport::PublisherPtr visual_pub_;
-
-			/// Publisher to send command results
-			transport::PublisherPtr workpiece_result_pub_;
-
-			msgs::Visual create_visual_msg(std::string element_name, double element_height, gazsim_msgs::Color clr);
-
-			void deliver(gazsim_msgs::Team team);
-			transport::PublisherPtr delivery_pub_;
-	};
+    /// Publisher to send visual changes to gazebo
+    transport::PublisherPtr visual_pub_;
+    
+    /// Publisher to send command results
+    transport::PublisherPtr workpiece_result_pub_;
+    
+    msgs::Visual create_visual_msg(std::string element_name, double element_height, gazsim_msgs::Color clr);
+    
+    void deliver(gazsim_msgs::Team team);
+    transport::PublisherPtr delivery_pub_;
+  };
 }

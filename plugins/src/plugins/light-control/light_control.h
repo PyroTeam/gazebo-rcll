@@ -27,6 +27,7 @@
 #include <list>
 #include <string.h>
 #include <llsf_msgs/MachineInfo.pb.h>
+#include <configurable/configurable.h>
 
 /* Substitute printf with gazebo::common::console::logger */
 #include <printf_substitute/sub.h>
@@ -36,7 +37,7 @@
 typedef const boost::shared_ptr<llsf_msgs::MachineInfo const> ConstMachineInfoPtr;
 
 //config values
-#define TOPIC_MACHINE_INFO "~/LLSFRbSim/MachineInfo/"
+#define TOPIC_MACHINE_INFO config->get_string("plugins/light-control/topic-machine-info").c_str()
 
 
 namespace gazebo
@@ -65,7 +66,7 @@ namespace gazebo
    * Plugin to control the light signals on an MPS
    * @author Frederik Zwilling
    */
-  class LightControl : public ModelPlugin
+  class LightControl : public ModelPlugin, public gazebo_rcll::ConfigurableAspect
   {
   public:
     LightControl();
