@@ -44,44 +44,37 @@ MpsLoader::~MpsLoader()
 
 void MpsLoader::Load(physics::ModelPtr _parent, sdf::ElementPtr sdf)
 {
-	// Listen to the update event. This event is broadcast every
-	// simulation iteration.
-	this->update_connection_ = event::Events::ConnectWorldUpdateBegin(boost::bind(&MpsLoader::OnUpdate, this, _1));
-
 	std::string name = _parent->GetName();
 	//set the machine type
 	if(name.find("BS")!=std::string::npos)
 	{
 		printf("detected machine type: base \n");
-		mps_ = new BaseStation();
+		mps_ = new BaseStation(_parent, sdf);
 	}
 	else if(name.find("CS")!=std::string::npos)
 	{
 		printf("detected machine type: cap \n");
-		mps_= new CapStation();
+		mps_= new CapStation(_parent, sdf);
 	}
 	else if(name.find("RS")!=std::string::npos)
 	{
 		printf("detected machine type: ring \n");
-		mps_ = new RingStation();
+		mps_ = new RingStation(_parent, sdf);
 	}
 	else if(name.find("DS")!=std::string::npos)
 	{
 		printf("detected machine type: delivery \n");
-		mps_ = new DeliveryStation();
+		mps_ = new DeliveryStation(_parent, sdf);
 	}
 	else
 	{
 		printf("unknown machine");
 	}
-
-	mps_->Load(_parent, sdf);
 }
 
 void MpsLoader::OnUpdate(const common::UpdateInfo &_info)
 {
-	// gzdbg << "MpsLoader::OnUpdate" ;
-	mps_->OnUpdate();
+
 }
 
 void MpsLoader::Reset()

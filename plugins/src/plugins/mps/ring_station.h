@@ -33,9 +33,8 @@ namespace gazebo {
 	class RingStation : public Mps
 	{
 		public:
-			RingStation();
+			RingStation(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
 
-			void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
 			void on_puck_msg(ConstPosePtr &msg);
 
 			void new_machine_info(ConstMachine &machine);

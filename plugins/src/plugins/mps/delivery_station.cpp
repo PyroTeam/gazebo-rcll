@@ -24,17 +24,10 @@
 
 using namespace gazebo;
 
-DeliveryStation::DeliveryStation() :
-	Mps()
+DeliveryStation::DeliveryStation(physics::ModelPtr _parent, sdf::ElementPtr  _sdf) :
+  Mps(_parent,_sdf)
 {
-	printf("Constructing DeliveryStation \n");
-}
-
-void DeliveryStation::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
-{
-	Mps::Load(_parent, _sdf);
-
-	selected_gate_ = 0;
+  selected_gate_ = 0;
 }
 
 void DeliveryStation::on_puck_msg(ConstPosePtr &msg)
