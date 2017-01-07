@@ -6,7 +6,7 @@
     <link name="cylinder">
       <gravity>true</gravity>
       <inertial>
-        <mass>50</mass>
+        <mass>0.05</mass>
       </inertial>
       <collision name="cylinder_collision">
         <geometry>
@@ -82,7 +82,7 @@
     </link>
 
     <!-- GPS plugin to let others know where this base is -->
-    <plugin name="GPS" filename="libgps.so"/>
     <plugin name="Puck" filename="libpuck.so"/>
+    <plugin name="GPS" filename="libgps.so"/>
   </model>
 </sdf>

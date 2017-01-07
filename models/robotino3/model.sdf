@@ -47,6 +47,14 @@
           </friction>
         </surface>
       </collision>
+      <collision name="body-collision-computer">
+        <pose>2.869 -1.87 0.19 0 0 1.95</pose>
+        <geometry>
+          <mesh>
+            <uri>model://robotino3/meshes/robotino-3-computer.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
       <!--<collision name="chassis-collision-for-laser">
         <pose>-0.05 0 0.17 0 0 0</pose>
         <geometry>
@@ -78,5 +86,6 @@
     <plugin name="Motor" filename="libmotor.so"/>
     <plugin name="Gyro" filename="libgyro.so"/>
     <plugin name="GPS" filename="libgps.so"/>
+    <plugin name="LightSignalDetection" filename="liblight_signal_detection.so"/>
   </model>
 </sdf>

@@ -26,6 +26,16 @@
 #include <gazebo/transport/transport.hh>
 #include <list>
 #include <string.h>
+#include <llsf_msgs/MachineInfo.pb.h>
+#include <configurable/configurable.h>
+
+
+//typedefs for sending the messages over the gazebo node
+typedef const boost::shared_ptr<llsf_msgs::MachineInfo const> ConstMachineInfoPtr;
+
+//config values
+#define TOPIC_MACHINE_INFO config->get_string("plugins/light-control/topic-machine-info").c_str()
+
 
 namespace gazebo
 {
@@ -53,7 +63,7 @@ namespace gazebo
    * Plugin to control the light signals on an MPS
    * @author Frederik Zwilling
    */
-  class LightControl : public ModelPlugin
+  class LightControl : public ModelPlugin, public gazebo_rcll::ConfigurableAspect
   {
   public:
     LightControl();
@@ -77,16 +87,19 @@ namespace gazebo
     physics::WorldPtr world_;
 
     // Light_Control Stuff:
-    
+
+    LightState state_red_, state_yellow_, state_green_;
+    LightState prev_state_red_, prev_state_yellow_, prev_state_green_;
+
     /// Subscriber to get msgs about the light status
     transport::SubscriberPtr light_msg_sub_;
 
     /// Handler for light status msg
-    void on_light_msg(ConstPosePtr &msg);
+    void on_light_msg(ConstMachineInfoPtr &msg);
 
     ///Publisher to send visual changes to gazebo
     transport::PublisherPtr visPub_;
-    msgs::Visual create_vis_msg(std::string machine_name, Color color, LightState state);
+    void change_light(std::string machine_name, Color color, LightState &state, LightState &prev_state);
 
     ///time variable to send in intervals
     double last_sent_time_;

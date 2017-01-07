@@ -58,7 +58,7 @@ void LightControl::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
   }
   machine_name_ = machine->GetName();
   
-  printf("MachSIgnal: parent machine: %s\n", machine_name_.c_str());
+  printf("MachSignal: parent machine: %s\n", machine_name_.c_str());
 
   // Listen to the update event. This event is broadcast every
   // simulation iteration.
@@ -73,10 +73,15 @@ void LightControl::Load(physics::ModelPtr _parent, sdf::ElementPtr /*_sdf*/)
   visPub_ = this->node_->Advertise<msgs::Visual>("~/visual",
 						 /*number of lights*/ 3*12);
 
-  //TODO: subscribe for light status msgs
+  //subscribe for light status msgs
+  light_msg_sub_ = node_->Subscribe(std::string(TOPIC_MACHINE_INFO), &LightControl::on_light_msg, this);
 
   world_ = model_->GetWorld();
   last_sent_time_ = world_->GetSimTime().Double();
+
+  //initially turn lights off
+  prev_state_red_ = prev_state_yellow_ = prev_state_green_ = ON;
+  state_red_ = state_yellow_ = state_green_ = OFF;
 }
 
 /** Called by the world update start event
@@ -87,7 +92,6 @@ void LightControl::OnUpdate(const common::UpdateInfo & /*_info*/)
   //wait until the world is completly loaded, otherwise the lights will spawn at (0,0)
   if(time < 20)
   {
-    //TODO still needed?
     return;
   }  
   //update lights only twice a second
@@ -96,11 +100,11 @@ void LightControl::OnUpdate(const common::UpdateInfo & /*_info*/)
     return;
   }
   last_sent_time_ = time;
+
   
-  //turn off yellow
-  visPub_->Publish(create_vis_msg(machine_name_, RED, BLINK));
-  visPub_->Publish(create_vis_msg(machine_name_, YELLOW, BLINK));
-  visPub_->Publish(create_vis_msg(machine_name_, GREEN, BLINK));
+  change_light(machine_name_, RED, state_red_, prev_state_red_);
+  change_light(machine_name_, YELLOW, state_yellow_, prev_state_yellow_);
+  change_light(machine_name_, GREEN, state_green_, prev_state_green_);
 }
 
 /** on Gazebo reset
@@ -113,16 +117,53 @@ void LightControl::Reset()
 /** Functions for recieving a light signal status msg
  * @param msg message
  */ 
-void LightControl::on_light_msg(ConstPosePtr &msg)
+void LightControl::on_light_msg(ConstMachineInfoPtr &msg)
 {
-  //printf("Got Msg from %s!!!", msg->name().c_str()); 
+  // printf("Got Light Msg!");
+  
+  // find right machine by name
+  for(int j = 0; j < msg->machines_size(); j++){
+    llsf_msgs::Machine machine_msg = msg->machines(j);
+    if(machine_msg.name() == machine_name_){
+      //set default values
+      state_red_ = OFF;
+      state_yellow_ = OFF;
+      state_green_ = OFF;
+    
+      //go through all light specs
+      for(int i = 0; i < machine_msg.lights_size(); i++){
+	llsf_msgs::LightSpec light_msg = machine_msg.lights(i);
+	LightState state = BLINK;
+	switch(light_msg.state())
+	{
+	case llsf_msgs::OFF: state = OFF; break;
+	case llsf_msgs::ON: state = ON; break;
+	case llsf_msgs::BLINK: state = BLINK; break;
+	}
+	switch(light_msg.color())
+	{
+	case llsf_msgs::RED: state_red_ = state; break;
+	case llsf_msgs::YELLOW: state_yellow_ = state; break;
+	case llsf_msgs::GREEN: state_green_ = state; break;
+	}
+      }
+      break;
+    }
+  }
 }
 
 
 //creates all needed visual messages
-msgs::Visual LightControl::create_vis_msg(std::string machine_name, Color color, LightState state)
+void LightControl::change_light(std::string machine_name, Color color, LightState &state, LightState &prev_state)
 {
-  //create message to return
+  //is there a change?
+  if(state != BLINK && state == prev_state)
+  {
+    return;
+  }
+  prev_state = state;
+  
+  //create message to send
   msgs::Visual msg;
 
   //resolve BLINK (Machines Blink at 2Hz)
@@ -156,19 +197,31 @@ msgs::Visual LightControl::create_vis_msg(std::string machine_name, Color color,
   case RED:
     {
       msg.set_name((parent_link + "::redon").c_str());
+#if GAZEBO_MAJOR_VERSION > 5
+      msgs::Set(msg.mutable_pose(), ignition::math::Pose3d(0, 0, 0.085, 0, 0, 0));
+#else
       msgs::Set(msg.mutable_pose(), math::Pose(0, 0, 0.085, 0, 0, 0));
+#endif
       break;
     }
   case YELLOW:
     {
       msg.set_name((parent_link + "::yellowon").c_str());
+#if GAZEBO_MAJOR_VERSION > 5
+      msgs::Set(msg.mutable_pose(), ignition::math::Pose3d(0, 0, 0.051, 0, 0, 0));
+#else
       msgs::Set(msg.mutable_pose(), math::Pose(0, 0, 0.051, 0, 0, 0));
+#endif
       break;
     }
   case GREEN:
     {
       msg.set_name((parent_link + "::greenon").c_str());
+#if GAZEBO_MAJOR_VERSION > 5
+      msgs::Set(msg.mutable_pose(), ignition::math::Pose3d(0, 0, 0.017, 0, 0, 0));
+#else
       msgs::Set(msg.mutable_pose(), math::Pose(0, 0, 0.017, 0, 0, 0));
+#endif
       break;
     }
   }
@@ -176,7 +229,6 @@ msgs::Visual LightControl::create_vis_msg(std::string machine_name, Color color,
 
   if(state == ON)
   {
-    msg.set_transparency(0.0);
     msg.set_visible(true);
     switch(color)
       {
@@ -202,7 +254,6 @@ msgs::Visual LightControl::create_vis_msg(std::string machine_name, Color color,
   }
   else
   {
-    msg.set_transparency(0.0);
     msg.set_visible(false);
     switch(color)
       {
@@ -230,5 +281,5 @@ msgs::Visual LightControl::create_vis_msg(std::string machine_name, Color color,
     }
   }
 
-  return msg;
+  visPub_->Publish(msg);
 }
